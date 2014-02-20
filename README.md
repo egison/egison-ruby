@@ -88,7 +88,7 @@ end
 ```
 match_all([1, 2, 3, 2, 5]) do
   with(Multiset.(a, _a, ___)) do
-    a #=> [[2,2],[2,2]]
+    a #=> [2,2]
   end
 end
 ```

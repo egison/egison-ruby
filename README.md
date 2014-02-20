@@ -109,8 +109,10 @@ match_all([5, 3, 4, 1, 2]) do
 end
 ```
 
-## Acknowledgement
+## LICENSE
 
+The license of this library code is BSD.
 I learned how to extend Ruby and how to write a gem from the code of [the pattern-match gem](https://github.com/k-tsj/pattern-match) by Kazuki Tsujimoto.
 I designed syntax of pattern-matching to go with that gem.
 I cannot write this library without that gem, since I am a beginner of meta programming in Ruby.
+You can read the full license text [here](https://github.com/egisatoshi/egison-ruby/LICENSE).

@@ -85,6 +85,8 @@ end
 
 ### Non-linear patterns
 
+Non-linear patterns are the most important feature of our pattern-mathcing system.
+
 ```
 match_all([1, 2, 3, 2, 5]) do
   with(Multiset.(a, _a, ___)) do
@@ -107,6 +109,50 @@ match_all([5, 3, 4, 1, 2]) do
     a #=> [1, 3, 4]
   end
 end
+```
+
+## Poker Hands
+
+We write a poker-hands demonstration as Egison.
+It is as follow.
+Egison is the world first and only language that can write all poker-hands in a single pattern.
+Now Ruby too!
+
+```
+def poker_hands cs
+  match_all([5, 3, 4, 1, 2]) do
+    with(Multiset.([s, n], [_s, _(n + 1)], [_s, _(n + 2)], [_s, _(n + 3)], [_s, _(n + 4)])) do
+      "Straight flush"
+    end
+    with(Multiset.([__, n], [__, _n], [__, _n], [__, _n], __)) do
+      "Four of kind"
+    end
+    with(Multiset.([__, m], [__, _m], [__, _m], [__, _n], [__, _n])) do
+      "Full house"
+    end
+    with(Multiset.([s, __], [s, __], [s, __], [s, __], [s, __])) do
+      "Flush"
+    end
+    with(Multiset.([__, n], [__, _(n + 1)], [__, _(n + 2)], [__, _(n + 3)], [__, _(n + 4)])) do
+      "Straight"
+    end
+    with(Multiset.([__, n], [__, _n], [__, _n], __, __)) do
+      "Three of kind"
+    end
+    with(Multiset.([__, m], [__, _m], [__, n], [__, _n], __)) do
+      "Two pairs"
+    end
+    with(Multiset.([__, n], [__, _n], __, __, __)) do
+      "One pair"
+    end
+    with(Multiset.(__, __, __, __, __)) do
+      "Nothing"
+    end
+end
+
+poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond", 2]]) #=> "Full house"
+poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond", 3]]) #=> "Straight"
+poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]]) #=> "Nothing"
 ```
 
 ## LICENSE

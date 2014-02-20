@@ -112,5 +112,5 @@ end
 ## Acknowledgement
 
 I learned how to extend Ruby and how to write a gem from the code of [the pattern-match gem](https://github.com/k-tsj/pattern-match) by Kazuki Tsujimoto.
-I referred syntax of pattern-matching to that gem.
+I designed syntax of pattern-matching to go with that gem.
 I cannot write this library without that gem, since I am a beginner of meta programming in Ruby.

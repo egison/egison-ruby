@@ -155,6 +155,15 @@ poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond",
 poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]]) #=> "Nothing"
 ```
 
+## About Egison
+
+If you get to love the above pattern-mathcing, please try [Egison](http://www.egison.org), too.
+It is more powerful.
+For example, programmers can define their own matcher in Egison.
+(In Egison, the list, multiset, and set matchers are defined in the library not builtin.)
+We can pattern-match against infinite lists.
+There are a new programming world!
+
 ## LICENSE
 
 The license of this library code is BSD.

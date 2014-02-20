@@ -113,7 +113,7 @@ end
 
 ## Poker Hands
 
-We write a poker-hands demonstration as Egison.
+We write a poker-hands demonstration as Egison. (http://www.egison.org/demonstrations/poker-hands.html)
 It is as follow.
 Egison is the world first and only language that can write all poker-hands in a single pattern.
 Now Ruby too!

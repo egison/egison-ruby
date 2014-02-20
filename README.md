@@ -162,7 +162,7 @@ It is more powerful.
 For example, programmers can define their own matcher in Egison.
 (In Egison, the list, multiset, and set matchers are defined in the library not builtin.)
 We can pattern-match against infinite lists.
-There are a new programming world!
+There is a new programming world!
 
 ## LICENSE
 

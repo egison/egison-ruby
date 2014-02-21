@@ -37,7 +37,7 @@ module PatternMatch
       @next = nil
       @prev = nil
       @choice_points = []
-      @subpatterns = subpatterns.map {|i| i.kind_of?(Pattern) ? i : PatternValue.new(i) }
+      @subpatterns = subpatterns.map {|i| i.kind_of?(Pattern) ? i : ValuePattern.new(i) }
       set_subpatterns_relation
     end
 
@@ -305,7 +305,7 @@ module PatternMatch
     end
   end
 
-  class PatternValue < PatternElement
+  class ValuePattern < PatternElement
     def initialize(val, compare_by = :===)
       super()
       @val = val
@@ -333,7 +333,7 @@ module PatternMatch
 
     def with(pat_or_val, guard_proc = nil, &block)
       ctx = @ctx
-      pat = pat_or_val.kind_of?(Pattern) ? pat_or_val : PatternValue.new(pat_or_val)
+      pat = pat_or_val.kind_of?(Pattern) ? pat_or_val : ValuePattern.new(pat_or_val)
       pat.validate
       if pat.match([@tgt])
         ret = with_quasibinding(ctx, pat.quasibinding, &block)
@@ -369,9 +369,9 @@ module PatternMatch
         end
         uscore
       when 1
-        PatternValue.new(vals[0])
+        ValuePattern.new(vals[0])
       when 2
-        PatternValue.new(vals[0], vals[1])
+        ValuePattern.new(vals[0], vals[1])
       else
         ::Kernel.raise MalformedPatternError
       end

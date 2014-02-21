@@ -113,7 +113,7 @@ end
 ```
 match_all([5, 3, 4, 1, 2]) do
   with(Multiset.(a, (a + 1), (a + 2), *_)) do
-    a #=> [1, 3, 4]
+    a #=> [1,2,3]
   end
 end
 ```
@@ -128,33 +128,15 @@ Now Ruby too!
 ```
 def poker_hands cs
   match([5, 3, 4, 1, 2]) do
-    with(Multiset.(_[s, n], _[s, (n + 1)], _[s, (n + 2)], _[s, (n + 3)], _[s, (n + 4)])) do
-      "Straight flush"
-    end
-    with(Multiset.(_[_, n], _[_, n], _[_, n], _[_, n], _)) do
-      "Four of kind"
-    end
-    with(Multiset.(_[_, m], _[_, m], _[_, m], _[_, _n], _[_, n])) do
-      "Full house"
-    end
-    with(Multiset.(_[s, _], _[s, _], _[s, _], _[s, _], _[s, _])) do
-      "Flush"
-    end
-    with(Multiset.(_[_, n], _[_, (n + 1)], _[_, (n + 2)], _[_, (n + 3)], _[_, (n + 4)])) do
-      "Straight"
-    end
-    with(Multiset.(_[_, n], _[_, n], _[_, n], _, _)) do
-      "Three of kind"
-    end
-    with(Multiset.(_[_, m], _[_, m], _[_, _n], _[_, n], _)) do
-      "Two pairs"
-    end
-    with(Multiset.(_[_, n], _[_, n], _, _, _)) do
-      "One pair"
-    end
-    with(Multiset.(_, _, _, _, _)) do
-      "Nothing"
-    end
+    with(Multiset.(_[s, n], _[s, (n + 1)], _[s, (n + 2)], _[s, (n + 3)], _[s, (n + 4)])) { "Straight flush" }
+    with(Multiset.(_[_, n], _[_, n], _[_, n], _[_, n], _)) { "Four of kind" }
+    with(Multiset.(_[_, m], _[_, m], _[_, m], _[_, _n], _[_, n])) { "Full house" }
+    with(Multiset.(_[s, _], _[s, _], _[s, _], _[s, _], _[s, _])) { "Flush" }
+    with(Multiset.(_[_, n], _[_, (n + 1)], _[_, (n + 2)], _[_, (n + 3)], _[_, (n + 4)])) { "Straight" }
+    with(Multiset.(_[_, n], _[_, n], _[_, n], _, _)) { "Three of kind" }
+    with(Multiset.(_[_, m], _[_, m], _[_, _n], _[_, n], _)) { "Two pairs" }
+    with(Multiset.(_[_, n], _[_, n], _, _, _)) { "One pair" }
+    with(Multiset.(_, _, _, _, _)) { "Nothing" }
 end
 
 poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond", 2]]) #=> "Full house"

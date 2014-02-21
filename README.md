@@ -124,7 +124,7 @@ Now Ruby too!
 
 ```
 def poker_hands cs
-  match([5, 3, 4, 1, 2]) do
+  match(cs) do
     with(Multiset.(_[_s, _n], _[s, (n + 1)], _[s, (n + 2)], _[s, (n + 3)], _[s, (n + 4)])) do
       "Straight flush"
     end

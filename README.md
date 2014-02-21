@@ -24,6 +24,9 @@ A element pattern matches the element of the target array.
 A subcollection pattern matches the subcollection of the target array.
 A subcollection pattern has `*` ahead.
 
+Literals that contain `_` ahead are pattern-variables.
+We can refer the result of pattern-matching through them.
+
 ```
 match_all([1, 2, 3]) do
   with(List.(*_hs, _x, *_ts)) do

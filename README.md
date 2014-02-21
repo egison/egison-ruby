@@ -171,5 +171,5 @@ There is a new programming world!
 The license of this library code is BSD.
 I learned how to extend Ruby and how to write a gem from the code of [the pattern-match gem](https://github.com/k-tsj/pattern-match) by Kazuki Tsujimoto.
 I designed syntax of pattern-matching to go with that gem.
-I cannot write this library without that gem, since I am a beginner of meta programming in Ruby.
+This library contains the copy from that gem.
 The full license text is [here](https://github.com/egisatoshi/egison-ruby/blob/master/LICENSE).

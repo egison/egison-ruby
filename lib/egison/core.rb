@@ -324,9 +324,9 @@ module PatternMatch
   end
 
   class Env < BasicObject
-    def initialize(ctx, val)
+    def initialize(ctx, tgt)
       @ctx = ctx
-      @val = val
+      @tgt = tgt
     end
 
     private
@@ -335,7 +335,7 @@ module PatternMatch
       ctx = @ctx
       pat = pat_or_val.kind_of?(Pattern) ? pat_or_val : PatternValue.new(pat_or_val)
       pat.validate
-      if pat.match([@val])
+      if pat.match([@tgt])
         ret = with_quasibinding(ctx, pat.quasibinding, &block)
         ::Kernel.throw(:exit_match, ret)
       else
@@ -344,18 +344,9 @@ module PatternMatch
     rescue PatternNotMatch
     end
 
-    def ___
-      PatternQuantifier.new(0, true)
-    end
-
     def method_missing(name, *args)
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
-      case name.to_s
-      when /\A__(\d+)(\??)\z/
-        PatternQuantifier.new($1.to_i, $2.empty?)
-      else
-        PatternVariable.new(name)
-      end
+      PatternVariable.new(name)
     end
 
     def _(*vals)
@@ -387,7 +378,6 @@ module PatternMatch
     end
 
     alias __ _
-    alias _l _
 
     def check_for_duplicate_vars(vars)
       vars.each_with_object({}) do |v, h|
@@ -467,14 +457,14 @@ end
 module Kernel
   private
 
-  def match(val, &block)
-    do_match = Proc.new do |val|
-      env = PatternMatch.const_get(:Env).new(self, val)
+  def match(tgt, &block)
+    do_match = Proc.new do |tgt|
+      env = PatternMatch.const_get(:Env).new(self, tgt)
       catch(:exit_match) do
         env.instance_eval(&block)
         raise PatternMatch::NoMatchingPatternError
       end
     end
-    do_match.(val)
+    do_match.(tgt)
   end
 end

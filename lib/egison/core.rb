@@ -377,8 +377,6 @@ module PatternMatch
       end
     end
 
-    alias __ _
-
     def check_for_duplicate_vars(vars)
       vars.each_with_object({}) do |v, h|
         if h.has_key?(v.name)

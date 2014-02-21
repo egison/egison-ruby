@@ -425,82 +425,6 @@ module PatternMatch
     end
   end
 
-  class PatternAnd < PatternElement
-    def match(vals)
-      super do |val|
-        subpatterns.all? {|i| i.match([val]) }
-      end
-    end
-
-    def validate
-      super
-      raise MalformedPatternError if subpatterns.empty?
-    end
-  end
-
-  class PatternOr < PatternElement
-    def match(vals)
-      super do |val|
-        subpatterns.find do |i|
-          begin
-            i.match([val])
-          rescue PatternNotMatch
-            false
-          end
-        end
-      end
-    end
-
-    def validate
-      super
-      raise MalformedPatternError if subpatterns.empty?
-      raise MalformedPatternError unless vars.empty?
-    end
-  end
-
-  class PatternNot < PatternElement
-    def match(vals)
-      super do |val|
-        begin
-          ! subpatterns[0].match([val])
-        rescue PatternNotMatch
-          true
-        end
-      end
-    end
-
-    def validate
-      super
-      raise MalformedPatternError unless subpatterns.length == 1
-      raise MalformedPatternError unless vars.empty?
-    end
-  end
-
-  class PatternCondition < PatternElement
-    def initialize(&condition)
-      super()
-      @condition = condition
-    end
-
-    def match(vals)
-      return false unless vals.empty?
-      if @condition.call
-        @next ? @next.match(vals) : true
-      else
-        false
-      end
-    end
-
-    def validate
-      super
-      raise MalformedPatternError if ancestors.find {|i| i.next and ! i.next.kind_of?(PatternCondition) }
-    end
-
-    def inspect
-      "#<#{self.class.name}: condition=#{@condition.inspect}>"
-    end
-  end
-
   class Env < BasicObject
     def initialize(ctx, val)
       @ctx = ctx
@@ -512,10 +436,6 @@ module PatternMatch
     def with(pat_or_val, guard_proc = nil, &block)
       ctx = @ctx
       pat = pat_or_val.kind_of?(Pattern) ? pat_or_val : PatternValue.new(pat_or_val)
-      pat.append(PatternCondition.new { check_for_duplicate_vars(pat.vars) })
-      if guard_proc
-        pat.append(PatternCondition.new { with_quasibinding(ctx, pat.quasibinding, &guard_proc) })
-      end
       pat.validate
       if pat.match([@val])
         ret = with_quasibinding(ctx, pat.quasibinding, &block)
@@ -526,16 +446,8 @@ module PatternMatch
     rescue PatternNotMatch
     end
 
-    def guard(&block)
-      block
-    end
-
     def ___
       PatternQuantifier.new(0, true)
-    end
-
-    def ___?
-      PatternQuantifier.new(0, false)
     end
 
     def method_missing(name, *args)
@@ -578,22 +490,6 @@ module PatternMatch
 
     alias __ _
     alias _l _
-
-    def Seq(*subpatterns)
-      PatternSequence.new(*subpatterns)
-    end
-
-    def And(*subpatterns)
-      PatternAnd.new(*subpatterns)
-    end
-
-    def Or(*subpatterns)
-      PatternOr.new(*subpatterns)
-    end
-
-    def Not(*subpatterns)
-      PatternNot.new(*subpatterns)
-    end
 
     def check_for_duplicate_vars(vars)
       vars.each_with_object({}) do |v, h|
@@ -673,7 +569,7 @@ end
 module Kernel
   private
 
-  def match(*vals, &block)
+  def match(val, &block)
     do_match = Proc.new do |val|
       env = PatternMatch.const_get(:Env).new(self, val)
       catch(:exit_match) do
@@ -681,13 +577,6 @@ module Kernel
         raise PatternMatch::NoMatchingPatternError
       end
     end
-    case vals.length
-    when 0
-      do_match
-    when 1
-      do_match.(vals[0])
-    else
-      raise ArgumentError, "wrong number of arguments (#{vals.length} for 0..1)"
-    end
+    do_match.(val)
   end
 end

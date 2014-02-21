@@ -1,1 +1,6 @@
 pattern-match-ruby
+.bundle
+Gemfile.lock
+coverage
+pkg/*
+vendor/*

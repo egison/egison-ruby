@@ -22,7 +22,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Multiset.(a, b, *_)) do
+  with(Multiset.(_a, _b, *_)) do
     a #=> [[1, 2],[1, 3],[2, 3]]
   end
 end
@@ -30,7 +30,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Set.(a, b, *_)) do
+  with(Set.(_a, _b, *_)) do
     a #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
   end
 end
@@ -51,7 +51,7 @@ A cons pattern divide the target to an element and the rest of elements.
 
 ```
 match_all([1, 2, 3]) do
-  with(List.(a, *b)) do
+  with(List.(_a, *_b)) do
     [a, b] #=> [1,[2, 3]]
   end
 end
@@ -59,7 +59,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Multiset.(a, *b)) do
+  with(Multiset.(_a, *_b)) do
     a #=> [[1,[2,3]],[2,[1,3]],[3,[1,2]]]
   end
 end
@@ -67,7 +67,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Set.(a, *b)) do
+  with(Set.(_a, *_b)) do
     a #=> [[1,[1,2,3]],[2,[1,2,3]],[3,[1,2,3]]]
   end
 end
@@ -77,7 +77,7 @@ A join pattern divide the target to two arrays.
 
 ```
 match_all([1, 2, 3]) do
-  with(List.(*a, *b)) do
+  with(List.(*_a, *_b)) do
     [a, b] #=> [[[],[1,2,3]],[[1],[2, 3]],[[1,2],[3]],[[1,2,3],[]]]
   end
 end
@@ -89,7 +89,7 @@ Non-linear patterns are the most important feature of our pattern-mathcing syste
 
 ```
 match_all([1, 2, 3, 2, 5]) do
-  with(Multiset.(a, _a, *_)) do
+  with(Multiset.(_a, a, *_)) do
     a #=> [2,2]
   end
 end
@@ -97,7 +97,7 @@ end
 
 ```
 match_all([30, 30, 20, 30, 20]) do
-  with(Multiset.(a, _a, _a, b, _b)) do
+  with(Multiset.(_a, a, a, _b, b)) do
     [a, b] #=> [[30,20], ...]
   end
 end
@@ -105,7 +105,7 @@ end
 
 ```
 match_all([5, 3, 4, 1, 2]) do
-  with(Multiset.(a, _(a + 1), _(a + 2), *_)) do
+  with(Multiset.(_a, (a + 1), (a + 2), *_)) do
     a #=> [1, 3, 4]
   end
 end
@@ -121,28 +121,28 @@ Now Ruby too!
 ```
 def poker_hands cs
   match([5, 3, 4, 1, 2]) do
-    with(Multiset.([s, n], [_s, _(n + 1)], [_s, _(n + 2)], [_s, _(n + 3)], [_s, _(n + 4)])) do
+    with(Multiset.([_s, _n], [s, (n + 1)], [s, (n + 2)], [s, (n + 3)], [s, (n + 4)])) do
       "Straight flush"
     end
-    with(Multiset.([_, n], [_, _n], [_, _n], [_, _n], _)) do
+    with(Multiset.([_, _n], [_, n], [_, n], [_, n], _)) do
       "Four of kind"
     end
-    with(Multiset.([_, m], [_, _m], [_, _m], [_, _n], [_, _n])) do
+    with(Multiset.([_, _m], [_, m], [_, m], [_, _n], [_, n])) do
       "Full house"
     end
-    with(Multiset.([s, _], [s, _], [s, _], [s, _], [s, _])) do
+    with(Multiset.([_s, _], [s, _], [s, _], [s, _], [s, _])) do
       "Flush"
     end
-    with(Multiset.([_, n], [_, _(n + 1)], [_, _(n + 2)], [_, _(n + 3)], [_, _(n + 4)])) do
+    with(Multiset.([_, _n], [_, (n + 1)], [_, (n + 2)], [_, (n + 3)], [_, (n + 4)])) do
       "Straight"
     end
-    with(Multiset.([_, n], [_, _n], [_, _n], _, _)) do
+    with(Multiset.([_, _n], [_, n], [_, n], _, _)) do
       "Three of kind"
     end
-    with(Multiset.([_, m], [_, _m], [_, n], [_, _n], _)) do
+    with(Multiset.([_, _m], [_, m], [_, _n], [_, n], _)) do
       "Two pairs"
     end
-    with(Multiset.([_, n], [_, _n], _, _, _)) do
+    with(Multiset.([_, _n], [_, n], _, _, _)) do
       "One pair"
     end
     with(Multiset.(_, _, _, _, _)) do

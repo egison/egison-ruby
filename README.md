@@ -17,6 +17,21 @@ $ gem install egison-*.gem
 
 ## Demonstrations
 
+### Element patterns and Subcollection patterns
+
+A element pattern matches the element of the target array.
+
+A subcollection pattern matches the subcollection of the target array.
+A subcollection pattern has `*` ahead.
+
+```
+match_all([1, 2, 3]) do
+  with(List.(*_hs, _x, *_ts)) do
+    [a, b] #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
+  end
+end
+```
+
 ### Three matchers: List, Multiset, Set
 
 ```
@@ -43,19 +58,6 @@ match_all([1, 2, 3]) do
 end
 ```
 
-### Three patterns: Nil pattern, Cons pattern, Join Pattern
-
-A nil pattern matches when target is an empty array.
-
-```
-match_all([]) do
-  with(List.()) do
-    "matched" #=> "matched"
-  end
-end
-```
-A cons pattern divide the target to an element and the rest of elements.
-
 ```
 match_all([1, 2, 3]) do
   with(List.(_a, *_b)) do
@@ -80,19 +82,11 @@ match_all([1, 2, 3]) do
 end
 ```
 
-A join pattern divide the target to two arrays.
-
-```
-match_all([1, 2, 3]) do
-  with(List.(*_a, *_b)) do
-    [a, b] #=> [[[],[1,2,3]],[[1],[2, 3]],[[1,2],[3]],[[1,2,3],[]]]
-  end
-end
-```
-
 ### Non-linear patterns
 
 Non-linear patterns are the most important feature of our pattern-mathcing system.
+Patterns which don't have `_` ahead of them are value patterns.
+It matches the target when the target is equal with it.
 
 ```
 match_all([1, 2, 3, 2, 5]) do

@@ -53,18 +53,6 @@ module PatternMatch
       vars.each_with_object({}) {|v, h| h[v.name] = v.val }
     end
 
-    def &(pattern)
-      PatternAnd.new(self, pattern)
-    end
-
-    def |(pattern)
-      PatternOr.new(self, pattern)
-    end
-
-    def !@
-      PatternNot.new(self)
-    end
-
     def to_a
       [self, PatternQuantifier.new(0, true)]
     end

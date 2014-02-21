@@ -8,8 +8,15 @@ For more information about Egison, visit [Egison web site](http://www.egison.org
 
 If you get interested in Egison, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@__Egi](https://twitter.com/__Egi) or [@Egison_Lang](https://twitter.com/Egison_Lang).
 
+## Installation
+
+```
+$ gem build egison.gemspec
+$ gem install egison-*.gem
+```
+
 ## Demonstrations
-pp
+
 ### Three matchers: List, Multiset, Set
 
 ```
@@ -121,28 +128,28 @@ Now Ruby too!
 ```
 def poker_hands cs
   match([5, 3, 4, 1, 2]) do
-    with(Multiset.([s, n], [s, (n + 1)], [s, (n + 2)], [s, (n + 3)], [s, (n + 4)])) do
+    with(Multiset.(_[s, n], _[s, (n + 1)], _[s, (n + 2)], _[s, (n + 3)], _[s, (n + 4)])) do
       "Straight flush"
     end
-    with(Multiset.([_, n], [_, n], [_, n], [_, n], _)) do
+    with(Multiset.(_[_, n], _[_, n], _[_, n], _[_, n], _)) do
       "Four of kind"
     end
-    with(Multiset.([_, m], [_, m], [_, m], [_, _n], [_, n])) do
+    with(Multiset.(_[_, m], _[_, m], _[_, m], _[_, _n], _[_, n])) do
       "Full house"
     end
-    with(Multiset.([s, _], [s, _], [s, _], [s, _], [s, _])) do
+    with(Multiset.(_[s, _], _[s, _], _[s, _], _[s, _], _[s, _])) do
       "Flush"
     end
-    with(Multiset.([_, n], [_, (n + 1)], [_, (n + 2)], [_, (n + 3)], [_, (n + 4)])) do
+    with(Multiset.(_[_, n], _[_, (n + 1)], _[_, (n + 2)], _[_, (n + 3)], _[_, (n + 4)])) do
       "Straight"
     end
-    with(Multiset.([_, n], [_, n], [_, n], _, _)) do
+    with(Multiset.(_[_, n], _[_, n], _[_, n], _, _)) do
       "Three of kind"
     end
-    with(Multiset.([_, m], [_, m], [_, _n], [_, n], _)) do
+    with(Multiset.(_[_, m], _[_, m], _[_, _n], _[_, n], _)) do
       "Two pairs"
     end
-    with(Multiset.([_, n], [_, n], _, _, _)) do
+    with(Multiset.(_[_, n], _[_, n], _, _, _)) do
       "One pair"
     end
     with(Multiset.(_, _, _, _, _)) do

@@ -18,6 +18,5 @@ Gem::Specification.new do |s|
   s.require_paths    = ['lib']
   s.add_development_dependency 'rake'
   s.add_development_dependency 'simplecov'
-  s.extra_rdoc_files = ['README.rdoc']
   s.rdoc_options     = ['--main', 'README.rdoc']
 end

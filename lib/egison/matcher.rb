@@ -21,6 +21,13 @@ class << Array
   end
 end
 
+class << List
+  def deconstruct(val)
+    accept_self_instance_only(val)
+    val
+  end
+end
+
 class << Struct
   def deconstruct(val)
     accept_self_instance_only(val)

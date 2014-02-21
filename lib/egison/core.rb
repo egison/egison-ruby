@@ -180,10 +180,6 @@ module PatternMatch
       super
       raise MalformedPatternError unless @prev and ! @prev.quantifier?
       raise MalformedPatternError unless @parent.kind_of?(HasOrderedSubPatterns)
-      seqs = ancestors.grep(PatternSequence).reverse
-      if seqs.any? {|i| i.next and i.next.quantifier? and not i.vars.empty? }
-        raise NotImplementedError
-      end
     end
 
     def quantifier?
@@ -324,92 +320,6 @@ module PatternMatch
 
     def inspect
       "#<#{self.class.name}: val=#{@val.inspect}>"
-    end
-  end
-
-  class PatternSequence < PatternElement
-    include HasOrderedSubPatterns
-
-    class PatternRewind < PatternElement
-      attr_reader :ntimes
-
-      def initialize(ntimes, head_pattern, next_pattern)
-        super()
-        @ntimes = ntimes
-        @head = head_pattern
-        @next = next_pattern
-      end
-
-      def match(vals)
-        if @ntimes > 0
-          @ntimes -= 1
-          @head.match(vals)
-        else
-          @next ? @next.match(vals) : vals.empty?
-        end
-      end
-
-      def inspect
-        "#<#{self.class.name}: ntimes=#{@ntimes} head=#{@head.inspect} next=#{@next.inspect}>"
-      end
-    end
-
-    def match(vals)
-      if directly_quantified?
-        repeating_match(vals, @next.greedy?) do |rewind|
-          if rewind.ntimes < @next.min_k
-            next false
-          end
-          rewind.match(vals)
-        end
-      else
-        with_rewind(make_rewind(1)) do |rewind|
-          rewind.match(vals)
-        end
-      end
-    end
-
-    def validate
-      super
-      raise MalformedPatternError if subpatterns.empty?
-      raise MalformedPatternError unless @parent.kind_of?(HasOrderedSubPatterns)
-    end
-
-    private
-
-    def make_rewind(n)
-      PatternRewind.new(n, subpatterns[0], directly_quantified? ? @next.next : @next)
-    end
-
-    def repeating_match(vals, is_greedy)
-      quantifier = @next
-      candidates = generate_candidates(vals)
-      (is_greedy ? candidates : candidates.reverse).each do |rewind|
-        vars.each {|i| i.set_bind_to(quantifier) }
-        begin
-          with_rewind(rewind) do
-            if yield rewind
-              return true
-            end
-          end
-        rescue PatternNotMatch
-        end
-        vars.each {|i| i.unset_bind_to(quantifier) }
-      end
-      false
-    end
-
-    def generate_candidates(vals)
-      vals.length.downto(0).map do |n|
-        make_rewind(n)
-      end
-    end
-
-    def with_rewind(rewind)
-      subpatterns[-1].next = rewind
-      yield rewind
-    ensure
-      subpatterns[-1].next = nil
     end
   end
 

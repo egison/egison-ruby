@@ -9,12 +9,12 @@ For more information about Egison, visit [Egison web site](http://www.egison.org
 If you get interested in Egison, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@__Egi](https://twitter.com/__Egi) or [@Egison_Lang](https://twitter.com/Egison_Lang).
 
 ## Demonstrations
-
+pp
 ### Three matchers: List, Multiset, Set
 
 ```
 match_all([1, 2, 3]) do
-  with(List.(a, b, ___)) do
+  with(List.(a, b, *_)) do
     a #=> [[1, 2]]
   end
 end
@@ -22,7 +22,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Multiset.(a, b, ___)) do
+  with(Multiset.(a, b, *_)) do
     a #=> [[1, 2],[1, 3],[2, 3]]
   end
 end
@@ -30,7 +30,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Set.(a, b, __)) do
+  with(Set.(a, b, *_)) do
     a #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
   end
 end
@@ -51,7 +51,7 @@ A cons pattern divide the target to an element and the rest of elements.
 
 ```
 match_all([1, 2, 3]) do
-  with(List.(a, __b)) do
+  with(List.(a, *b)) do
     [a, b] #=> [1,[2, 3]]
   end
 end
@@ -59,7 +59,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Multiset.(a, __b)) do
+  with(Multiset.(a, *b)) do
     a #=> [[1,[2,3]],[2,[1,3]],[3,[1,2]]]
   end
 end
@@ -67,7 +67,7 @@ end
 
 ```
 match_all([1, 2, 3]) do
-  with(Set.(a, __b)) do
+  with(Set.(a, *b)) do
     a #=> [[1,[1,2,3]],[2,[1,2,3]],[3,[1,2,3]]]
   end
 end
@@ -77,7 +77,7 @@ A join pattern divide the target to two arrays.
 
 ```
 match_all([1, 2, 3]) do
-  with(List.(__a, __b)) do
+  with(List.(*a, *b)) do
     [a, b] #=> [[[],[1,2,3]],[[1],[2, 3]],[[1,2],[3]],[[1,2,3],[]]]
   end
 end
@@ -89,7 +89,7 @@ Non-linear patterns are the most important feature of our pattern-mathcing syste
 
 ```
 match_all([1, 2, 3, 2, 5]) do
-  with(Multiset.(a, _a, ___)) do
+  with(Multiset.(a, _a, *_)) do
     a #=> [2,2]
   end
 end
@@ -105,7 +105,7 @@ end
 
 ```
 match_all([5, 3, 4, 1, 2]) do
-  with(Multiset.(a, _(a + 1), _(a + 2), __)) do
+  with(Multiset.(a, _(a + 1), _(a + 2), *_)) do
     a #=> [1, 3, 4]
   end
 end
@@ -124,28 +124,28 @@ def poker_hands cs
     with(Multiset.([s, n], [_s, _(n + 1)], [_s, _(n + 2)], [_s, _(n + 3)], [_s, _(n + 4)])) do
       "Straight flush"
     end
-    with(Multiset.([__, n], [__, _n], [__, _n], [__, _n], __)) do
+    with(Multiset.([_, n], [_, _n], [_, _n], [_, _n], _)) do
       "Four of kind"
     end
-    with(Multiset.([__, m], [__, _m], [__, _m], [__, _n], [__, _n])) do
+    with(Multiset.([_, m], [_, _m], [_, _m], [_, _n], [_, _n])) do
       "Full house"
     end
-    with(Multiset.([s, __], [s, __], [s, __], [s, __], [s, __])) do
+    with(Multiset.([s, _], [s, _], [s, _], [s, _], [s, _])) do
       "Flush"
     end
-    with(Multiset.([__, n], [__, _(n + 1)], [__, _(n + 2)], [__, _(n + 3)], [__, _(n + 4)])) do
+    with(Multiset.([_, n], [_, _(n + 1)], [_, _(n + 2)], [_, _(n + 3)], [_, _(n + 4)])) do
       "Straight"
     end
-    with(Multiset.([__, n], [__, _n], [__, _n], __, __)) do
+    with(Multiset.([_, n], [_, _n], [_, _n], _, _)) do
       "Three of kind"
     end
-    with(Multiset.([__, m], [__, _m], [__, n], [__, _n], __)) do
+    with(Multiset.([_, m], [_, _m], [_, n], [_, _n], _)) do
       "Two pairs"
     end
-    with(Multiset.([__, n], [__, _n], __, __, __)) do
+    with(Multiset.([_, n], [_, _n], _, _, _)) do
       "One pair"
     end
-    with(Multiset.(__, __, __, __, __)) do
+    with(Multiset.(_, _, _, _, _)) do
       "Nothing"
     end
 end

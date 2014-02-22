@@ -30,7 +30,7 @@ We can refer the result of pattern-matching through them.
 ```
 match_all([1, 2, 3]) do
   with(List.(*_hs, _x, *_ts)) do
-    [a, b] #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
+    [hs, x, ts] #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
   end
 end
 ```
@@ -38,9 +38,9 @@ end
 ### Three matchers: List, Multiset, Set
 
 ```
-match_all([1, 2, 3]) do
+match([1, 2, 3]) do
   with(List.(_a, _b, *_)) do
-    a #=> [[1, 2]]
+    [a, b] #=> [[1, 2]]
   end
 end
 ```

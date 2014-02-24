@@ -81,20 +81,20 @@ module PatternMatch
       subpatterns.each(&:validate)
     end
 
-    def match(vals)
+    def match(tgt)
       if directly_quantified?
         q = @next
-        repeating_match(vals, q.greedy?) do |vs, rest|
+        repeating_match(tgt, q.greedy?) do |vs, rest|
           if vs.length < q.min_k
             next false
           end
           vs.all? {|v| yield(v) } and q.match(rest)
         end
       else
-        if vals.empty?
+        if tgt.empty?
           return false
         end
-        val, *rest = vals
+        val, *rest = tgt
         yield(val) and (@next ? @next.match(rest) : rest.empty?)
       end.tap do |matched|
         if root? and not matched and not choice_points.empty?
@@ -186,11 +186,11 @@ module PatternMatch
       true
     end
 
-    def match(vals)
+    def match(tgt)
       if @next
-        @next.match(vals)
+        @next.match(tgt)
       else
-        vals.empty?
+        tgt.empty?
       end
     end
 
@@ -220,9 +220,9 @@ module PatternMatch
       @deconstructor = deconstructor
     end
 
-    def match(vals)
-      super do |val|
-        deconstructed_vals = @deconstructor.deconstruct(val)
+    def match(tgt)
+      super do |tgt|
+        deconstructed_vals = @deconstructor.deconstruct(tgt)
         if subpatterns.empty?
           next deconstructed_vals.empty?
         end
@@ -245,9 +245,9 @@ module PatternMatch
       @bind_to = nil
     end
 
-    def match(vals)
-      super do |val|
-        bind(val)
+    def match(tgt)
+      super do |tgt|
+        bind(tgt)
         true
       end
     end
@@ -312,9 +312,9 @@ module PatternMatch
       @compare_by = compare_by
     end
 
-    def match(vals)
-      super do |val|
-        @val.__send__(@compare_by, val)
+    def match(tgt)
+      super do |tgt|
+        @val.__send__(@compare_by, tgt)
       end
     end
 
@@ -331,7 +331,7 @@ module PatternMatch
 
     private
 
-    def with(pat_or_val, guard_proc = nil, &block)
+    def with(pat_or_val, &block)
       ctx = @ctx
       pat = pat_or_val.kind_of?(Pattern) ? pat_or_val : ValuePattern.new(pat_or_val)
       pat.validate

@@ -346,7 +346,11 @@ module PatternMatch
 
     def method_missing(name, *args)
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
-      PatternVariable.new(name)
+      if /^_/.match(name.to_s)
+        PatternVariable.new(name.to_s.gsub(/^_/, "").to_sym)
+      else
+        PatternVariable.new(name)
+      end
     end
 
     def _(*vals)

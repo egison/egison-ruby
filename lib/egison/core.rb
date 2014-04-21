@@ -128,9 +128,7 @@ module PatternMatch
     def binding_module(obj)
       m = obj.singleton_class.ancestors.find {|i| i.kind_of?(BindingModule) }
       unless m
-        m = BindingModule.new do
-          @stacks = ::Hash.new {|h, k| h[k] = [] }
-        end
+        m = BindingModule.new
         obj.singleton_class.class_eval do
           if respond_to?(:prepend, true)
             prepend m

@@ -33,7 +33,18 @@ module PatternMatch
       bind(name, tgt)
       true
     end
+  end
 
+  class ValuePattern < PatternElement
+    def initialize(val, compare_by = :===)
+      super()
+      @val = val
+      @compare_by = compare_by
+    end
+
+    def match(tgt)
+      @val.__send__(@compare_by, tgt)
+    end
   end
 
   class PatternCollection < Pattern
@@ -68,6 +79,34 @@ module PatternMatch
     end
 
     class BindingModule < ::Module
+    end
+
+    def _(*vals)
+      case vals.length
+      when 0
+        uscore = PatternVariable.new(:_)
+        class << uscore
+          def [](*args)
+            Array.call(*args)
+          end
+
+          def vars
+            []
+          end
+
+          private
+
+          def bind(val)
+          end
+        end
+        uscore
+      when 1
+        ValuePattern.new(vals[0])
+      when 2
+        ValuePattern.new(vals[0], vals[1])
+      else
+        ::Kernel.raise MalformedPatternError
+      end
     end
 
     def with_bindings(obj, bindings, &block)

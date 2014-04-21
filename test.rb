@@ -4,21 +4,10 @@ match(10) do
   with(__a) { p a }
 end
 
-b = 2
-x = match(10) do with(__a) { a + b } end
-p x
-
-
 match(10) do
   with(_(10)) { p 10 }
 end
 
-b = 10
-x = match(10) do with(_(b)) { b } end
-p x
-
-
-b = 10
-x = match(10) do with(_(2)) { b + 1 }
-                 with(_(b)) { b + 2 } end
-p x
+match([100, 200]) do
+  with(List.(__a, __b)) { p [a, b] }
+end

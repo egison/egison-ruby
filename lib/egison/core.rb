@@ -2,19 +2,70 @@ require 'egison/version'
 require 'continuation'
 
 module PatternMatch
+  module Matchable
+    def call(*subpatterns)
+      pattern_matcher(*subpatterns)
+    end
+  end
+
+  class ::Object
+    private
+
+    def pattern_matcher(*subpatterns)
+      PatternWithMatcher.new(self, *subpatterns)
+    end
+  end
 
   class Pattern
+    attr_accessor :parent
     attr_reader :bindings
 
     def initialize()
+      @parent = nil
       @bindings = Hash.new
+    end
+
+    def root?
+      @parent == nil
+    end
+
+    def root
+      root? ? self : @parent.root
     end
 
     def match(tgt)
     end
 
     def bind(name, val)
-      @bindings[name] = val
+      root.bindings[name] = val
+    end
+  end
+
+  class PatternWithMatcher < Pattern
+    attr_reader :matcher, :subpatterns
+
+    def initialize(matcher, *subpatterns)
+      super()
+      @matcher = matcher
+      @subpatterns = subpatterns
+      @subpatterns.each {|spat| spat.parent = self}
+    end
+
+    def match(tgt)
+      while !subpatterns.empty?
+        if tgt.empty?
+          return false
+        end
+        unconsed_vals = @matcher.uncons(tgt)
+        px = subpatterns.shift
+        px.match(unconsed_vals[0])
+        tgt = unconsed_vals[1]
+      end
+      if tgt.empty?
+        return true
+      else
+        return false
+      end
     end
   end
 

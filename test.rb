@@ -16,3 +16,9 @@ end
 b = 10
 x = match(10) do with(_(b)) { b } end
 p x
+
+
+b = 10
+x = match(10) do with(_(2)) { b + 1 }
+                 with(_(b)) { b + 2 } end
+p x

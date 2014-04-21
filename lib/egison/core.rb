@@ -87,14 +87,15 @@ module PatternMatch
   end
 
   class ValuePattern < PatternElement
-    def initialize(val, compare_by = :===)
+    def initialize(env, block)
       super()
-      @val = val
-      @compare_by = compare_by
+      @env = env
+      @val = block
     end
 
     def match(tgt)
-      @val.__send__(@compare_by, tgt)
+      val = @env.with_binding(@env.ctx, self.root.binding, @val)
+      val.__send__(:===, tgt)
     end
   end
 
@@ -122,8 +123,8 @@ module PatternMatch
 
     def method_missing(name, *args)
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
-      if /^__/.match(name.to_s)
-        PatternVariable.new(name.to_s.gsub(/^__/, "").to_sym)
+      if /^_/.match(name.to_s)
+        PatternVariable.new(name.to_s.gsub(/^_/, "").to_sym)
       else
         undefined
       end
@@ -132,32 +133,8 @@ module PatternMatch
     class BindingModule < ::Module
     end
 
-    def _(*vals)
-      case vals.length
-      when 0
-        uscore = PatternVariable.new(:_)
-        class << uscore
-          def [](*args)
-            Array.call(*args)
-          end
-
-          def vars
-            []
-          end
-
-          private
-
-          def bind(val)
-          end
-        end
-        uscore
-      when 1
-        ValuePattern.new(vals[0])
-      when 2
-        ValuePattern.new(vals[0], vals[1])
-      else
-        ::Kernel.raise MalformedPatternError
-      end
+    def _(&block)
+      ValuePattern.new(self, &block)
     end
 
     def with_bindings(obj, bindings, &block)
@@ -212,6 +189,11 @@ end
 
 module Kernel
   private
+
+  def match_all(tgt, &block)
+    env = PatternMatch.const_get(:Env).new(self, tgt)
+    env.instance_eval(&block)
+  end
 
   def match(tgt, &block)
     env = PatternMatch.const_get(:Env).new(self, tgt)

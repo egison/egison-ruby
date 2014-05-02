@@ -16,36 +16,83 @@ module PatternMatch
     end
   end
 
+  class MatchingStateStack
+    attr_accessor :states
+    attr_accessor :results
+    
+    def initialize(pat, tgt)
+      @states = [MatchingState.new(pat, tgt)]
+      @results = []
+    end
+
+    def match
+      while !@states.empty? do
+        process
+      end
+      @results
+    end
+    
+    def process
+      state = pop
+      new_states = state.process
+      next_states = []
+      new_states.each { |new_state|
+        if new_state.atoms.empty? then
+          @results = @results + [new_state.bindings]
+        else
+          next_states = next_states + [new_state]
+        end
+      }
+      append(next_states)
+    end
+
+    def pop
+      @states.shift
+    end
+
+    def push(pat,tgt)
+      @states = [pat, tgt] + atoms
+    end
+
+    def append(new_states)
+      @states = new_states + @states
+    end
+  end
+
   class MatchingState
     attr_accessor :atoms
     attr_accessor :bindings
 
     def initialize(pat, tgt)
       @atoms = [[pat, tgt]]
-      @bindings = Hash.new
+      @bindings = []
     end
 
-    def match_proc
+    def process
       atom = pop
-      next_atoms = atom.first.match(atom.last)
-
-      append(next_atoms)
+      rets = atom.first.match(atom.last, @bindings)
+      rets.map { |new_atoms, new_bindings|
+        new_state = self.clone
+        new_state.append(new_atoms)
+        new_state.append_bindings(new_bindings)
+        new_state
+      }
     end
     
     def pop
-      @bindings.shift
+      @atoms.shift
     end
 
     def push(pat,tgt)
-      @atoms = [pat, tgt] + atoms
+      @atoms = [pat, tgt] + @atoms
     end
 
-    def append(atoms)
-      @atoms = atoms + atoms
+    def append(new_atoms)
+      @atoms = new_atoms + @atoms
     end
 
-    def bind(name, val)
-      @bindings[name] = val
+    def append_bindings(new_bindings)
+      @bindings = @bindings + new_bindings
     end
   end
 
@@ -53,7 +100,7 @@ module PatternMatch
     def initialize()
     end
 
-    def match(tgt)
+    def match(tgt, bindings)
     end
   end
 
@@ -66,14 +113,14 @@ module PatternMatch
       @subpatterns = subpatterns
     end
 
-    def match(tgt)
+    def match(tgt, bindings)
       while !subpatterns.empty?
         if tgt.empty?
           return false
         end
         unconsed_vals = @matcher.uncons(tgt)
         px = subpatterns.shift
-        px.match(unconsed_vals[0])
+        px.match(unconsed_vals[0], bindings)
         tgt = unconsed_vals[1]
       end
       if tgt.empty?
@@ -95,7 +142,7 @@ module PatternMatch
       @name = name
     end
 
-    def match(tgt)
+    def match(tgt, bindings)
       [[[], [[name, tgt]]]]
     end
   end
@@ -107,8 +154,8 @@ module PatternMatch
       @expr = expr
     end
 
-    def match(tgt)
-      val = with_bindings(@ctx, self.root.bindings, {:expr => @expr}) { eval expr }
+    def match(tgt, bindings)
+      val = with_bindings(@ctx, bindings, {:expr => @expr}) { eval expr }
       if val.__send__(:===, tgt) then
         [[[], []]]
       else
@@ -172,11 +219,11 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      if pat.match(tgt)
-        ret = with_bindings(ctx, pat.bindings, &block)
-      else
-        nil
-      end
+      mstack = MatchingStateStack.new(pat,tgt)
+      mstack.match
+      mstack.results.map { |bindings|
+        ret = with_bindings(ctx, bindings, &block)
+      }
     rescue PatternNotMatch
     end
 

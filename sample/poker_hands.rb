@@ -2,7 +2,7 @@ require 'egison'
 
 def poker_hands cs
   match(cs) do
-    with(Multiset.(_[_s, _n], _[__s, __n_plus_1], _[__s, __n_plus_2], _[__s, __n_plus_3], _[__s, __n_plus_4])) do
+    with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do
       "Straight flush"
     end
     with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _[_, __n], _)) do
@@ -14,7 +14,7 @@ def poker_hands cs
     with(Multiset.(_[_s, _], _[__s, _], _[__s, _], _[__s, _], _[__s, _])) do
       "Flush"
     end
-    with(Multiset.(_[_, _n], _[_, __n_plus_1], _[_, __n_plus_2], _[_, __n_plus_3], _[_, __n_plus_4])) do
+    with(Multiset.(_[_, _n], _[_, __("n+1")], _[_, __("n+2")], _[_, __("n+3")], _[_, __("n+4")])) do
       "Straight"
     end
     with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _, _)) do

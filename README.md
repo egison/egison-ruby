@@ -80,7 +80,7 @@ end
 ### Non-linear patterns
 
 Non-linear patterns are the most important feature of our pattern-mathcing system.
-Patterns which don't have `__` ahead of them are value patterns.
+Patterns which have `__` ahead of them are value patterns.
 It matches the target when the target is equal with it.
 
 ```
@@ -101,7 +101,7 @@ end
 
 ```
 match_all([5, 3, 4, 1, 2]) do
-  with(Multiset.(_a, __(a + 1), __(a + 2), *_)) do
+  with(Multiset.(_a, __("a + 1"), __("a + 2"), *_)) do
     a #=> [1,2,3]
   end
 end
@@ -115,9 +115,11 @@ Egison is the world first and only language that can write all poker-hands in a 
 Now Ruby too!
 
 ```
+require 'egison'
+
 def poker_hands cs
   match(cs) do
-    with(Multiset.(_[_s, _n], _[__s, __n_plus_1], _[__s, __n_plus_2], _[__s, __n_plus_3], _[__s, __n_plus_4])) do
+    with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do
       "Straight flush"
     end
     with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _[_, __n], _)) do
@@ -129,7 +131,7 @@ def poker_hands cs
     with(Multiset.(_[_s, _], _[__s, _], _[__s, _], _[__s, _], _[__s, _])) do
       "Flush"
     end
-    with(Multiset.(_[_, _n], _[_, __n_plus_1], _[_, __n_plus_2], _[_, __n_plus_3], _[_, __n_plus_4])) do
+    with(Multiset.(_[_, _n], _[_, __("n+1")], _[_, __("n+2")], _[_, __("n+3")], _[_, __("n+4")])) do
       "Straight"
     end
     with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _, _)) do

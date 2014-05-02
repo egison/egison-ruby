@@ -153,7 +153,7 @@ module PatternMatch
     def initialize(ctx, expr)
       super()
       @ctx = ctx
-      @expr = expr.gsub("_plus_", "+").gsub("_minus_", "-")
+      @expr = expr
     end
 
     def match(tgt, bindings)
@@ -239,7 +239,7 @@ module PatternMatch
     def method_missing(name, *args)
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
       if /^__/.match(name.to_s)
-        ValuePattern.new(@ctx, name.to_s.gsub(/^__/, ""))
+        ValuePattern.new(@ctx, name.to_s.gsub(/^__/, "").gsub("_plus_", "+").gsub("_minus_", "-"))
       elsif /^_/.match(name.to_s)
         PatternVariable.new(name.to_s.gsub(/^_/, "").to_sym)
       else
@@ -257,9 +257,15 @@ module PatternMatch
           end
         end
         uscore
+      when 1
+        ValuePattern.new(@ctx, vals[0])
       else
         undefined
       end
+    end
+
+    def __(val)
+      ValuePattern.new(@ctx, val)
     end
 
     class BindingModule < ::Module

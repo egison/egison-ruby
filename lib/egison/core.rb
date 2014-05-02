@@ -60,8 +60,7 @@ module PatternMatch
   end
 
   class MatchingState
-    attr_accessor :atoms
-    attr_accessor :bindings
+    attr_accessor :atoms, :bindings
 
     def initialize(pat, tgt)
       @atoms = [[pat, tgt]]
@@ -97,14 +96,27 @@ module PatternMatch
   end
 
   class Pattern
-    def initialize()
+    attr_accessor :quantified
+    
+    def initialize
     end
 
     def match(tgt, bindings)
     end
+
+    def to_a
+      [PatternCollection.new(self)]
+    end
   end
 
-  class PatternWithMatcher < Pattern
+  class PatternElement < Pattern
+    def initialize
+      super()
+      @quantified = false
+    end
+  end
+
+  class PatternWithMatcher < PatternElement
     attr_reader :matcher, :subpatterns
 
     def initialize(matcher, *subpatterns)
@@ -121,17 +133,30 @@ module PatternMatch
           return []
         end
       else
-        unconseds = @matcher.uncons(tgt)
         px = subpatterns.shift
-        unconseds.map { |x, xs|
-          [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
-        }
+        if px.quantified then
+          if subpatterns.empty? then
+            [[[[px.pattern, tgt]], []]]
+          else
+            unjoineds = @matcher.unjoin(tgt)
+            unjoineds.map { |xs, ys| [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []] }
+          end
+        else
+          unconseds = @matcher.uncons(tgt)
+          unconseds.map { |x, xs| [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []] }
+        end
       end
     end
-    
   end
 
-  class PatternElement < Pattern
+  class Wildcard < PatternElement
+    def initialize()
+      super()
+    end
+
+    def match(tgt, bindings)
+      [[[], []]]
+    end
   end
 
   class PatternVariable < PatternElement
@@ -206,6 +231,13 @@ module PatternMatch
   end
 
   class PatternCollection < Pattern
+    attr_accessor :pattern
+    
+    def initialize(pat)
+      super()
+      @quantified = true
+      @pattern = pat
+    end
   end
 
   class Env < BasicObject
@@ -231,6 +263,8 @@ module PatternMatch
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
       if /^__/.match(name.to_s)
         ValuePattern.new(@ctx, name.to_s.gsub(/^__/, ""))
+      elsif /^_$/.match(name.to_s)
+        Wildcard.new()
       elsif /^_/.match(name.to_s)
         PatternVariable.new(name.to_s.gsub(/^_/, "").to_sym)
       else

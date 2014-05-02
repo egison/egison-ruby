@@ -176,7 +176,7 @@ module PatternMatch
     def initialize(ctx, expr)
       super()
       @ctx = ctx
-      @expr = expr
+      @expr = expr.gsub("_plus_", "+").gsub("_minus_", "-")
     end
 
     def match(tgt, bindings)
@@ -263,10 +263,23 @@ module PatternMatch
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
       if /^__/.match(name.to_s)
         ValuePattern.new(@ctx, name.to_s.gsub(/^__/, ""))
-      elsif /^_$/.match(name.to_s)
-        Wildcard.new()
       elsif /^_/.match(name.to_s)
         PatternVariable.new(name.to_s.gsub(/^_/, "").to_sym)
+      else
+        undefined
+      end
+    end
+
+    def _(*vals)
+      case vals.length
+      when 0
+        uscore = Wildcard.new()
+        class << uscore
+          def [](*args)
+            List.call(*args)
+          end
+        end
+        uscore
       else
         undefined
       end

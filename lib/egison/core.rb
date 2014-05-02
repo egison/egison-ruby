@@ -16,28 +16,44 @@ module PatternMatch
     end
   end
 
-  class Pattern
-    attr_accessor :parent
-    attr_reader :bindings
+  class MatchingState
+    attr_accessor :atoms
+    attr_accessor :bindings
 
-    def initialize()
-      @parent = nil
+    def initialize(pat, tgt)
+      @atoms = [[pat, tgt]]
       @bindings = Hash.new
     end
 
-    def root?
-      @parent == nil
+    def match_proc
+      atom = pop
+      next_atoms = atom.first.match(atom.last)
+
+      append(next_atoms)
+    end
+    
+    def pop
+      @bindings.shift
     end
 
-    def root
-      root? ? self : @parent.root
+    def push(pat,tgt)
+      @atoms = [pat, tgt] + atoms
     end
 
-    def match(tgt)
+    def append(atoms)
+      @atoms = atoms + atoms
     end
 
     def bind(name, val)
-      root.bindings[name] = val
+      @bindings[name] = val
+    end
+  end
+
+  class Pattern
+    def initialize()
+    end
+
+    def match(tgt)
     end
   end
 
@@ -48,7 +64,6 @@ module PatternMatch
       super()
       @matcher = matcher
       @subpatterns = subpatterns
-      @subpatterns.each {|spat| spat.parent = self}
     end
 
     def match(tgt)
@@ -81,8 +96,7 @@ module PatternMatch
     end
 
     def match(tgt)
-      bind(name, tgt)
-      true
+      [[[], [[name, tgt]]]]
     end
   end
 
@@ -95,7 +109,11 @@ module PatternMatch
 
     def match(tgt)
       val = with_bindings(@ctx, self.root.bindings, {:expr => @expr}) { eval expr }
-      val.__send__(:===, tgt)
+      if val.__send__(:===, tgt) then
+        [[[], []]]
+      else
+        []
+      end
     end
 
     class BindingModule < ::Module

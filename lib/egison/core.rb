@@ -114,21 +114,21 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
-      while !subpatterns.empty?
-        if tgt.empty?
-          return false
+      if subpatterns.empty? then
+        if tgt.empty? then
+          return [[[], []]]
+        else
+          return []
         end
-        unconsed_vals = @matcher.uncons(tgt)
-        px = subpatterns.shift
-        px.match(unconsed_vals[0], bindings)
-        tgt = unconsed_vals[1]
-      end
-      if tgt.empty?
-        return true
       else
-        return false
+        unconseds = @matcher.uncons(tgt)
+        px = subpatterns.shift
+        unconseds.map { |x, xs|
+          [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
+        }
       end
     end
+    
   end
 
   class PatternElement < Pattern

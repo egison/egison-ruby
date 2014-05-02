@@ -6,15 +6,14 @@ p ret1
 ret2 = match_all(10) do with(__10) { :ok } end
 p ret2
 
-match_all([100, 200]) do
-  with(List.(_a, _b)) { if [a, b] == [100, 200] then p :ok end }
-end
+ret3 = match_all([100, 200, 300]) do with(List.(_a, _b, _c)) { [a, b, c] } end
+p ret3
 
-match_all([1, 2, 3]) do
-  with(List.(_a, _b, _c)) { if [a, b, c] == [1, 2, 3] then p :ok end }
-end
+ret4 = match_all([100, 200, 300]) do with(Multiset.(_a, _b, _c)) { [a, b, c] } end
+p ret4
 
-match_all([20, 20]) do
-  with(List.(_a, __a)) { p :ok }
-end
+ret5 = match_all([20, 20]) do with(List.(_a, __a)) { :ok } end
+p ret5
 
+ret6 = match_all([100, 200, 100]) do with(Multiset.(_a, __a, _b)) { [a, b] } end
+p ret6#=>[[100, 200], [100, 200]]

@@ -297,6 +297,22 @@ module PatternMatch
     end
   end
 
+  class Env2 < Env
+    def with(pat, &block)
+      ctx = @ctx
+      tgt = @tgt
+      mstack = MatchingStateStack.new(pat,tgt)
+      mstack.match
+      if mstack.results.empty? then
+        nil
+      else
+        ret = with_bindings(ctx, mstack.results.first, &block)
+        ::Kernel.throw(:exit_match, ret)
+      end
+    rescue PatternNotMatch
+    end
+  end
+    
   class PatternNotMatch < Exception; end
   class PatternMatchError < StandardError; end
   class NoMatchingPatternError < PatternMatchError; end
@@ -311,7 +327,7 @@ module PatternMatch
         private_constant c
       end
     end
-    private_constant :Env
+    private_constant :Env, :Env2
   end
 end
 
@@ -324,7 +340,10 @@ module Kernel
   end
 
   def match(tgt, &block)
-    env = PatternMatch.const_get(:Env).new(self, tgt)
-    env.instance_eval(&block)
+    env = PatternMatch.const_get(:Env2).new(self, tgt)
+    catch(:exit_match) do
+      env.instance_eval(&block)
+    end
   end
+
 end

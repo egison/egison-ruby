@@ -33,28 +33,16 @@ module PatternMatch
     end
     
     def process
-      state = pop
-      new_states = state.process
-      next_states = []
-      new_states.each { |new_state|
-        if new_state.atoms.empty? then
-          @results = @results + [new_state.bindings]
+      state = @states.shift
+      rets = state.process
+      new_states = []
+      rets.each { |ret|
+        if ret.atoms.empty? then
+          @results = @results + [ret.bindings]
         else
-          next_states = next_states + [new_state]
+          new_states = new_states + [ret]
         end
       }
-      append(next_states)
-    end
-
-    def pop
-      @states.shift
-    end
-
-    def push(pat,tgt)
-      @states = [pat, tgt] + atoms
-    end
-
-    def append(new_states)
       @states = new_states + @states
     end
   end
@@ -68,30 +56,14 @@ module PatternMatch
     end
 
     def process
-      atom = pop
+      atom = @atoms.shift
       rets = atom.first.match(atom.last, @bindings)
       rets.map { |new_atoms, new_bindings|
         new_state = self.clone
-        new_state.append(new_atoms)
-        new_state.append_bindings(new_bindings)
+        new_state.atoms = new_atoms + new_state.atoms
+        new_state.bindings = new_state.bindings + new_bindings
         new_state
       }
-    end
-    
-    def pop
-      @atoms.shift
-    end
-
-    def push(pat,tgt)
-      @atoms = [pat, tgt] + @atoms
-    end
-
-    def append(new_atoms)
-      @atoms = new_atoms + @atoms
-    end
-
-    def append_bindings(new_bindings)
-      @bindings = @bindings + new_bindings
     end
   end
 
@@ -133,6 +105,7 @@ module PatternMatch
           return []
         end
       else
+        subpatterns = @subpatterns.clone
         px = subpatterns.shift
         if px.quantified then
           if subpatterns.empty? then

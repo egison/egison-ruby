@@ -47,10 +47,11 @@ end
 class << Multiset
   def uncons(val)
     accept_array_only(val)
-    val.map {|x|
+    rets = val.map {|x|
       val2 = val.clone
       val2.delete_at(val2.find_index(x))
       [x, val2]
     }
+    rets
   end
 end

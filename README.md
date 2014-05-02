@@ -123,7 +123,7 @@ def poker_hands cs
     with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _[_, __n], _)) do
       "Four of kind"
     end
-    with(Multiset.(_[_, _m], _[_, m], _[_, m], _[_, _n], _[_, __n])) do
+    with(Multiset.(_[_, _m], _[_, __m], _[_, __m], _[_, _n], _[_, __n])) do
       "Full house"
     end
     with(Multiset.(_[_s, _], _[__s, _], _[__s, _], _[__s, _], _[__s, _])) do
@@ -135,7 +135,7 @@ def poker_hands cs
     with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _, _)) do
       "Three of kind"
     end
-    with(Multiset.(_[_, _m], _[_, m], _[_, _n], _[_, __n], _)) do
+    with(Multiset.(_[_, _m], _[_, __m], _[_, _n], _[_, __n], _)) do
       "Two pairs"
     end
     with(Multiset.(_[_, _n], _[_, __n], _, _, _)) do
@@ -147,9 +147,10 @@ def poker_hands cs
   end
 end
 
-poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond", 2]]) #=> "Full house"
-poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond", 3]]) #=> "Straight"
-poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]]) #=> "Nothing"
+p(poker_hands([["diamond", 1], ["diamond", 3], ["diamond", 5], ["diamond", 4], ["diamond", 2]])) #=> "Straight flush"
+p(poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond", 2]])) #=> "Full house"
+p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Straight"
+p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Nothing"
 ```
 
 ## About Egison

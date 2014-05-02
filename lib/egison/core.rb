@@ -142,8 +142,12 @@ module PatternMatch
             unjoineds.map { |xs, ys| [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []] }
           end
         else
-          unconseds = @matcher.uncons(tgt)
-          unconseds.map { |x, xs| [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []] }
+          if tgt.empty? then
+            []
+          else
+            unconseds = @matcher.uncons(tgt)
+            unconseds.map { |x, xs| [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []] }
+          end
         end
       end
     end

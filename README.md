@@ -14,7 +14,7 @@ $ gem install egison-*.gem
 
 ## Demonstrations
 
-### Element patterns and Subcollection patterns
+### Element patterns and subcollection patterns
 
 A element pattern matches the element of the target array.
 
@@ -134,7 +134,6 @@ p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamon
 ## Further Information
 
 For more information about the Gem, visit [our website](http://www.egison.org).
-
 
 ## About Egison
 

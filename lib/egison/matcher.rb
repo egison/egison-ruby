@@ -55,3 +55,17 @@ class << Multiset
     rets
   end
 end
+
+class Set
+end
+
+class << Set
+  def uncons(val)
+    accept_array_only(val)
+    rets = val.map {|x|
+      val2 = val.clone
+      [x, val2]
+    }
+    rets
+  end
+end

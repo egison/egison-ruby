@@ -57,26 +57,6 @@ match_all([1, 2, 3]) do
 end
 ```
 
-```
-match_all([1, 2, 3]) do
-  with(List.(_a, *_b)) do
-    [a, b] #=> [1,[2, 3]]
-  end
-end
-
-match_all([1, 2, 3]) do
-  with(Multiset.(_a, *_b)) do
-    a #=> [[1,[2,3]],[2,[1,3]],[3,[1,2]]]
-  end
-end
-
-match_all([1, 2, 3]) do
-  with(Set.(_a, *_b)) do
-    a #=> [[1,[1,2,3]],[2,[1,2,3]],[3,[1,2,3]]]
-  end
-end
-```
-
 ### Non-linear patterns
 
 Non-linear patterns are the most important feature of our pattern-mathcing system.
@@ -109,10 +89,9 @@ end
 
 ## Poker Hands
 
-We write a poker-hands demonstration as Egison. (http://www.egison.org/demonstrations/poker-hands.html)
+We can write patterns for all poker-hands in one single pattern.
 It is as follow.
-Egison is the world first and only language that can write all poker-hands in a single pattern.
-Now Ruby too!
+Isn't it exciting?
 
 ```
 require 'egison'
@@ -159,9 +138,7 @@ p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamon
 
 If you get to love the above pattern-mathcing, please try [Egison](http://www.egison.org), too.
 It is more powerful.
-For example, programmers can define their own matcher in Egison.
-(In Egison, the list, multiset, and set matchers are defined in the library not builtin.)
-We can pattern-match against infinite lists.
+For examplke ,we can pattern-match against infinite lists.
 There is a new programming world!
 
 ## LICENSE

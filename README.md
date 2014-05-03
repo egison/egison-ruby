@@ -1,10 +1,8 @@
 ## The Gem for Egison Pattern Matching 
 
-This is the repository of the Ruby library to access Egison pattern-matching from Ruby.
+This Gem provides a way  to access Egison pattern-matching from Ruby.
 Egison is the pattern-matching oriented pure functional programming langauge.
 Egison is the world's first programming language that can represent non-linear pattern-match against unfree data types.
-
-For more information about the Gem, visit [Egison web site](http://www.egison.org).
 
 If you get interested in this Gem, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@Egison_Lang](https://twitter.com/Egison_Lang).
 
@@ -133,6 +131,11 @@ p(poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond
 p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Straight"
 p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Nothing"
 ```
+
+## Further Information
+
+For more information about the Gem, visit [our website](http://www.egison.org).
+
 
 ## About Egison
 

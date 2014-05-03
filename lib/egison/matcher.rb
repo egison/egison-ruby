@@ -65,7 +65,7 @@ class << Multiset
       x = val2.shift
       ys = val2.clone
       rets2 = unjoin(ys)
-      rets = (rets2.map {|xs2, ys2| [xs2, [x]+ys2]}) + (rets2.map {|xs2, ys2| [xs2+[x], ys2]})
+      rets = (rets2.map {|xs2, ys2| [xs2, [x]+ys2]}) + (rets2.map {|xs2, ys2| [[x]+xs2, ys2]})
       rets
     else
       rets
@@ -95,7 +95,7 @@ class << Set
       x = val2.shift
       ys2 = val2.clone
       rets2 = unjoin(ys2)
-      rets = (rets2.map {|xs2, _| [xs2, ys]}) + (rets2.map {|xs2, ys2| [xs2+[x], ys]})
+      rets = (rets2.map {|xs2, _| [xs2, ys]}) + (rets2.map {|xs2, ys2| [[x]+xs2, ys]})
       rets
     else
       rets

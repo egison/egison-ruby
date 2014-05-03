@@ -1,12 +1,12 @@
 ## The Gem for Egison Pattern Matching 
 
-Egison is the pattern-matching oriented pure functional programming langauge.
-Egison is the world's first programming language that can represent non-linear pattern-match against unfree data types such as sets.
 This is the repository of the Ruby library to access Egison pattern-matching from Ruby.
+Egison is the pattern-matching oriented pure functional programming langauge.
+Egison is the world's first programming language that can represent non-linear pattern-match against unfree data types.
 
-For more information about Egison, visit [Egison web site](http://www.egison.org).
+For more information about the Gem, visit [Egison web site](http://www.egison.org).
 
-If you get interested in Egison, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@__Egi](https://twitter.com/__Egi) or [@Egison_Lang](https://twitter.com/Egison_Lang).
+If you get interested in this Gem, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@Egison_Lang](https://twitter.com/Egison_Lang).
 
 ## Installation
 

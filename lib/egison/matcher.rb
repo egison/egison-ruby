@@ -54,6 +54,23 @@ class << Multiset
     }
     rets
   end
+  
+  def unjoin(val)
+    accept_array_only(val)
+    val2 = val.clone
+    xs = []
+    ys = val2.clone
+    rets = [[xs, ys]]
+    if !val2.empty? then
+      x = val2.shift
+      ys = val2.clone
+      rets2 = unjoin(ys)
+      rets = (rets2.map {|xs2, ys2| [xs2, [x]+ys2]}) + (rets2.map {|xs2, ys2| [xs2+[x], ys2]})
+      rets
+    else
+      rets
+    end
+  end
 end
 
 class Set
@@ -67,5 +84,21 @@ class << Set
       [x, val2]
     }
     rets
+  end
+  def unjoin(val)
+    accept_array_only(val)
+    val2 = val.clone
+    xs = []
+    ys = val2.clone
+    rets = [[xs, ys]]
+    if !val2.empty? then
+      x = val2.shift
+      ys2 = val2.clone
+      rets2 = unjoin(ys2)
+      rets = (rets2.map {|xs2, _| [xs2, ys]}) + (rets2.map {|xs2, ys2| [xs2+[x], ys]})
+      rets
+    else
+      rets
+    end
   end
 end

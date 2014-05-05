@@ -29,7 +29,7 @@ $ bundle install --path vendor/bundle
 
 ## Basic Usage
 
-egison library provides `Kernel#match` and  `Kernel#match_all`.
+The library provides `Kernel#match` and  `Kernel#match_all`.
 
 ```
 require 'egison'

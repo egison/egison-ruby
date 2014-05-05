@@ -12,11 +12,11 @@ $ gem build egison.gemspec
 $ gem install egison-*.gem
 ```
 
-## Demonstrations
+## How to use
 
 ### Element patterns and subcollection patterns
 
-A element pattern matches the element of the target array.
+An element pattern matches the element of the target array.
 
 A subcollection pattern matches the subcollection of the target array.
 A subcollection pattern has `*` ahead.
@@ -34,6 +34,10 @@ end
 
 ### Three matchers: List, Multiset, Set
 
+We can write pattern-matching against lists, multisets, and sets.
+When we rergard an array as a multiset, the order of elements are ignored.
+When we rergard an array as a set, the duplicates and order of elements are ignored.
+
 ```
 match([1, 2, 3]) do
   with(List.(_a, _b, *_)) do
@@ -41,7 +45,7 @@ match([1, 2, 3]) do
   end
 end
 
-match_all([1, 2, 3]) do
+match([1, 2, 3]) do
   with(Multiset.(_a, _b, *_)) do
     a #=> [[1, 2],[1, 3],[2, 3]]
   end
@@ -56,25 +60,11 @@ end
 
 ### Non-linear patterns
 
-Non-linear patterns are the most important feature of our pattern-mathcing system.
-Patterns which have `__` ahead of them are value patterns.
-It matches the target when the target is equal with it.
-
-```
-match_all([1, 2, 3, 2, 5]) do
-  with(Multiset.(_a, __a, *_)) do
-    a #=> [2,2]
-  end
-end
-```
-
-```
-match_all([30, 30, 20, 30, 20]) do
-  with(Multiset.(_a, __a, __a, _b, __b)) do
-    [a, b] #=> [[30,20], ...]
-  end
-end
-```
+Non-linear pattern is the most important feature of our pattern-mathcing system.
+Our pattern-matching system allows users mutltiple occurences of same variables in a pattern.
+A Pattern whose form is `__("...")` is a value pattern.
+In the place of `...`, we can write any ruby expression we like.
+It matches the target when the target is equal with the value that `...` evaluated to.
 
 ```
 match_all([5, 3, 4, 1, 2]) do
@@ -84,7 +74,17 @@ match_all([5, 3, 4, 1, 2]) do
 end
 ```
 
-## Poker Hands
+When, the expression in the place of `...` is a single variable, we can omit `("` and `")` as follow.
+
+```
+match_all([1, 2, 3, 2, 5]) do
+  with(Multiset.(_a, __a, *_)) do
+    a #=> [2,2]
+  end
+end
+```
+
+## Demonstration - Poker Hands
 
 We can write patterns for all poker-hands in one single pattern.
 It is as follow.

@@ -35,27 +35,27 @@ end
 ### Three matchers: List, Multiset, Set
 
 We can write pattern-matching against lists, multisets, and sets.
-When we rergard an array as a multiset, the order of elements are ignored.
+When we rergard an array as a multiset, the order of elements is ignored.
 When we rergard an array as a set, the duplicates and order of elements are ignored.
 
 ```
 match([1, 2, 3]) do
   with(List.(_a, _b, *_)) do
-    [a, b] #=> [[1, 2]]
+    [a, b]
   end
-end
+end  #=> [[1, 2]]
 
 match([1, 2, 3]) do
   with(Multiset.(_a, _b, *_)) do
-    a #=> [[1, 2],[1, 3],[2, 3]]
+    a
   end
-end
+end  #=> [[1, 2],[1, 3],[2, 3]]
 
 match_all([1, 2, 3]) do
   with(Set.(_a, _b, *_)) do
-    a #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
+    a
   end
-end
+end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 ```
 
 ### Non-linear patterns
@@ -69,9 +69,9 @@ It matches the target when the target is equal with the value that `...` evaluat
 ```
 match_all([5, 3, 4, 1, 2]) do
   with(Multiset.(_a, __("a + 1"), __("a + 2"), *_)) do
-    a #=> [1,2,3]
+    a
   end
-end
+end  #=> [1,2,3]
 ```
 
 When, the expression in the place of `...` is a single variable, we can omit `("` and `")` as follow.
@@ -79,9 +79,9 @@ When, the expression in the place of `...` is a single variable, we can omit `("
 ```
 match_all([1, 2, 3, 2, 5]) do
   with(Multiset.(_a, __a, *_)) do
-    a #=> [2,2]
+    a
   end
-end
+end  #=> [2,2]
 ```
 
 ## Demonstration - Poker Hands
@@ -131,16 +131,17 @@ p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond
 p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Nothing"
 ```
 
-## Further Information
-
-For more information about the Gem, visit [our website](http://www.egison.org).
-
 ## About Egison
 
 If you get to love the above pattern-mathcing, please try [Egison](http://www.egison.org), too.
 Egison is the pattern-matching oriented pure functional programming langauge.
 Actually, the original pattern-matching system of Egison is more powerful.
-For example, we can pattern-match against infinite lists.
+For example, we can do following things in the original Egison.
+
+- We can pattern-match against infinite lists
+- We can define new pattern-constrctors.
+- We can moduralize useful patterns.
+
 There is a new programming world!
 
 ## LICENSE

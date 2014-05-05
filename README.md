@@ -1,4 +1,4 @@
-## The Gem for Egison Pattern Matching 
+# The Gem for Egison Pattern Matching 
 
 This Gem provides a way to access Egison pattern-matching from Ruby.
 Egison is the world's first programming language that can represent non-linear pattern-match against unfree data types.
@@ -27,7 +27,7 @@ $ echo "gem 'egison', :git => 'git://github.com/egison/egison-ruby.git'" > Gemfi
 $ bundle install --path vendor/bundle
 ```
 
-== Basic Usage
+## Basic Usage
 
 egison library provides `Kernel#match` and  `Kernel#match_all`.
 
@@ -51,7 +51,7 @@ match(object) do
 end
 ```
 
-If a pattern matches, a block passed to `with` is called and return its result.
+If a pattern matches, a block passed to `with` is called and returns its result.
 
 In our pattern-matching system, there are cases that pattern-matching has multiple results.
 `match_all` calls the block passed to `with` for each pattern-matching result and returns all results as an array.

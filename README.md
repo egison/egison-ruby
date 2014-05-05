@@ -1,18 +1,67 @@
 ## The Gem for Egison Pattern Matching 
 
-This Gem provides a way  to access Egison pattern-matching from Ruby.
+This Gem provides a way to access Egison pattern-matching from Ruby.
 Egison is the world's first programming language that can represent non-linear pattern-match against unfree data types.
-
-If you get interested in this Gem, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@Egison_Lang](https://twitter.com/Egison_Lang).
+We can directly express pattern-matching against lists, multisets, and sets using this gem.
 
 ## Installation
 
 ```
+$ gem install egison
+```
+
+or
+
+```
+$ git clone git://github.com/egison/egison-ruby.git
+$ cd egison-ruby
 $ gem build egison.gemspec
 $ gem install egison-*.gem
 ```
 
-## How to use
+or
+
+```
+$ gem install bundler (if you need)
+$ echo "gem 'egison', :git => 'git://github.com/egison/egison-ruby.git'" > Gemfile
+$ bundle install --path vendor/bundle
+```
+
+== Basic Usage
+
+egison library provides `Kernel#match` and  `Kernel#match_all`.
+
+```
+require 'egison'
+
+match_all(object) do
+  with(pattern) do
+    ...
+  end
+end
+
+match(object) do
+  with(pattern) do
+    ...
+  end
+  with(pattern) do
+    ...
+  end
+  ...
+end
+```
+
+If a pattern matches, a block passed to `with` is called and return its result.
+
+In our pattern-matching system, there are cases that pattern-matching has multiple results.
+`match_all` calls the block passed to `with` for each pattern-matching result and returns all results as an array.
+`match_all` takes one single match-clause (`width`).
+
+On the other hand, `match` takes multiple match-clauses.
+It pattern-matches from the first match-clause.
+If a pattern matches, it calls the block passed to matched match-clause and returns a result for the first pattern-matching result.
+
+## Patterns
 
 ### Element patterns and subcollection patterns
 
@@ -35,8 +84,8 @@ end  #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
 ### Three matchers: List, Multiset, Set
 
 We can write pattern-matching against lists, multisets, and sets.
-When we rergard an array as a multiset, the order of elements is ignored.
-When we rergard an array as a set, the duplicates and order of elements are ignored.
+When we regard an array as a multiset, the order of elements is ignored.
+When we regard an array as a set, the duplicates and order of elements are ignored.
 
 ```
 match_all([1, 2, 3]) do
@@ -60,8 +109,8 @@ end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 
 ### Non-linear patterns
 
-Non-linear pattern is the most important feature of our pattern-mathcing system.
-Our pattern-matching system allows users mutltiple occurences of same variables in a pattern.
+Non-linear pattern is the most important feature of our pattern-matching system.
+Our pattern-matching system allows users multiple occurrences of same variables in a pattern.
 A Pattern whose form is `__("...")` is a value pattern.
 In the place of `...`, we can write any ruby expression we like.
 It matches the target when the target is equal with the value that `...` evaluated to.
@@ -133,16 +182,20 @@ p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamon
 
 ## About Egison
 
-If you get to love the above pattern-mathcing, please try [Egison](http://www.egison.org), too.
-Egison is the pattern-matching oriented pure functional programming langauge.
+If you get to love the above pattern-matching, please try [Egison](http://www.egison.org), too.
+Egison is the pattern-matching oriented pure functional programming language.
 Actually, the original pattern-matching system of Egison is more powerful.
 For example, we can do following things in the original Egison.
 
 - We can pattern-match against infinite lists
-- We can define new pattern-constrctors.
-- We can moduralize useful patterns.
+- We can define new pattern-constructors.
+- We can modularize useful patterns.
 
 There is a new programming world!
+
+## Contact
+
+If you get interested in this Gem, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@Egison_Lang](https://twitter.com/Egison_Lang).
 
 ## LICENSE
 

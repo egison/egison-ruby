@@ -107,6 +107,16 @@ match_all([1, 2, 3]) do
 end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 ```
 
+Note that <code>_[]</code> is provided as syntactic sugar for <code>List.()</code>.
+
+```
+match_all([1, 2, 3]) do
+  with(_[_a, _b, *_]) do
+    [a, b]
+  end
+end  #=> [[1, 2]]
+```
+
 ### Non-linear patterns
 
 Non-linear pattern is the most important feature of our pattern-matching system.

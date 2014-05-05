@@ -27,9 +27,9 @@ We can refer the result of pattern-matching through them.
 ```
 match_all([1, 2, 3]) do
   with(List.(*_hs, _x, *_ts)) do
-    [hs, x, ts] #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
+    [hs, x, ts]
   end
-end
+end  #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
 ```
 
 ### Three matchers: List, Multiset, Set
@@ -39,21 +39,21 @@ When we rergard an array as a multiset, the order of elements is ignored.
 When we rergard an array as a set, the duplicates and order of elements are ignored.
 
 ```
-match([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(List.(_a, _b, *_)) do
     [a, b]
   end
 end  #=> [[1, 2]]
 
-match([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(Multiset.(_a, _b, *_)) do
-    a
+    [a, b]
   end
-end  #=> [[1, 2],[1, 3],[2, 3]]
+end  #=> [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 
 match_all([1, 2, 3]) do
   with(Set.(_a, _b, *_)) do
-    a
+    [a, b]
   end
 end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 ```

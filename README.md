@@ -55,22 +55,22 @@ If a pattern matches, a block passed to `with` is called and returns its result.
 
 In our pattern-matching system, there are cases that pattern-matching has multiple results.
 `match_all` calls the block passed to `with` for each pattern-matching result and returns all results as an array.
-`match_all` takes one single match-clause (`width`).
+`match_all` takes one single match-clause.
 
 On the other hand, `match` takes multiple match-clauses.
 It pattern-matches from the first match-clause.
-If a pattern matches, it calls the block passed to matched match-clause and returns a result for the first pattern-matching result.
+If a pattern matches, it calls the block passed to the matched match-clause and returns a result for the first pattern-matching result.
 
 ## Patterns
 
 ### Element patterns and subcollection patterns
 
-An element pattern matches the element of the target array.
+An <i>element pattern</i> matches the element of the target array.
 
-A subcollection pattern matches the subcollection of the target array.
+A <i>subcollection pattern</i> matches the subcollection of the target array.
 A subcollection pattern has `*` ahead.
 
-Literals that contain `_` ahead are pattern-variables.
+A literal that contain `_` ahead is a <i>pattern-variable</i>.
 We can refer the result of pattern-matching through them.
 
 ```
@@ -182,7 +182,7 @@ p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamon
 
 ## About Egison
 
-If you get to love the above pattern-matching, please try [Egison](http://www.egison.org), too.
+If you get to love the above pattern-matching, please try [the Egison programming language](http://www.egison.org), too.
 Egison is the pattern-matching oriented pure functional programming language.
 Actually, the original pattern-matching system of Egison is more powerful.
 For example, we can do following things in the original Egison.

@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.authors     = ['Satoshi Egi']
   s.email       = ['egi@egison.org']
   s.homepage    = 'https://github.com/egisatoshi/egison-ruby'
-  s.summary     = %q{An Egison pattern matching library}
+  s.summary     = %q{The Egison pattern matching library}
   s.description = %w{
-    A library to access Egison pattern-matching in Ruby.
+    The library to access Egison pattern-matching from Ruby.
   }.join(' ')
 
   s.files            = `git ls-files`.split("\n")
@@ -17,6 +17,5 @@ Gem::Specification.new do |s|
   s.executables      = `git ls-files -- bin/*`.split("\n").map{|f| File.basename(f) }
   s.require_paths    = ['lib']
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'simplecov'
   s.rdoc_options     = ['--main', 'README.rdoc']
 end

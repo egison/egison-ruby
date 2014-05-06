@@ -190,6 +190,8 @@ p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond
 p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Nothing"
 ```
 
+You can find more demonstrations in the `[sample](https://github.com/egison/egison-ruby/tree/master/sample)` directory.
+
 ## About Egison
 
 If you get to love the above pattern-matching, please try [the Egison programming language](http://www.egison.org), too.

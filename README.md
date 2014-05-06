@@ -13,7 +13,7 @@ $ gem install egison
 or
 
 ```
-$ git clone git://github.com/egison/egison-ruby.git
+$ git clone https://github.com/egison/egison-ruby.git
 $ cd egison-ruby
 $ gem build egison.gemspec
 $ gem install egison-*.gem
@@ -23,7 +23,7 @@ or
 
 ```
 $ gem install bundler (if you need)
-$ echo "gem 'egison', :git => 'git://github.com/egison/egison-ruby.git'" > Gemfile
+$ echo "gem 'egison', :git => 'https://github.com/egison/egison-ruby.git'" > Gemfile
 $ bundle install --path vendor/bundle
 ```
 

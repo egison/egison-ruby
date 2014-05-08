@@ -29,7 +29,7 @@ $ bundle install --path vendor/bundle
 
 ## Basic Usage
 
-The library provides `Kernel#match` and  `Kernel#match_all`.
+The library provides `Kernel#match_all` and  `Kernel#match`.
 
 ```
 require 'egison'
@@ -199,7 +199,7 @@ Egison is the pattern-matching oriented pure functional programming language.
 Actually, the original pattern-matching system of Egison is more powerful.
 For example, we can do following things in the original Egison.
 
-- We can pattern-match against infinite lists
+- We can pattern-match against infinite lists.
 - We can define new pattern-constructors.
 - We can modularize useful patterns.
 

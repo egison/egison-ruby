@@ -264,10 +264,23 @@ module PatternMatch
       end
     end
 
-    def __(val)
-      ValuePattern.new(@ctx, val)
+    def __(*vals)
+      case vals.length
+      when 0
+        uscore = Wildcard.new()
+        class << uscore
+          def [](*args)
+            List.call(*args)
+          end
+        end
+        uscore
+      when 1
+        ValuePattern.new(@ctx, vals[0])
+      else
+        undefined
+      end
     end
-
+    
     class BindingModule < ::Module
     end
 

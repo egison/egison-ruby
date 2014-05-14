@@ -87,31 +87,34 @@ We can write pattern-matching against lists, multisets, and sets.
 When we regard an array as a multiset, the order of elements is ignored.
 When we regard an array as a set, the duplicates and order of elements are ignored.
 
+`__` is a <i>wildcard</i>.
+It matches with any object.
+
 ```
 match_all([1, 2, 3]) do
-  with(List.(_a, _b, *_)) do
+  with(List.(_a, _b, *__)) do
     [a, b]
   end
 end  #=> [[1, 2]]
 
 match_all([1, 2, 3]) do
-  with(Multiset.(_a, _b, *_)) do
+  with(Multiset.(_a, _b, *__)) do
     [a, b]
   end
 end  #=> [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 
 match_all([1, 2, 3]) do
-  with(Set.(_a, _b, *_)) do
+  with(Set.(_a, _b, *__)) do
     [a, b]
   end
 end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 ```
 
-Note that <code>_[]</code> is provided as syntactic sugar for <code>List.()</code>.
+Note that `_[]` is provided as syntactic sugar for `List.()`.
 
 ```
 match_all([1, 2, 3]) do
-  with(_[_a, _b, *_]) do
+  with(_[_a, _b, *__]) do
     [a, b]
   end
 end  #=> [[1, 2]]
@@ -127,7 +130,7 @@ It matches the target when the target is equal with the value that `...` evaluat
 
 ```
 match_all([5, 3, 4, 1, 2]) do
-  with(Multiset.(_a, __("a + 1"), __("a + 2"), *_)) do
+  with(Multiset.(_a, __("a + 1"), __("a + 2"), *__)) do
     a
   end
 end  #=> [1,2,3]
@@ -137,7 +140,7 @@ When, the expression in the place of `...` is a single variable, we can omit `("
 
 ```
 match_all([1, 2, 3, 2, 5]) do
-  with(Multiset.(_a, __a, *_)) do
+  with(Multiset.(_a, __a, *__)) do
     a
   end
 end  #=> [2,2]
@@ -157,28 +160,28 @@ def poker_hands cs
     with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do
       "Straight flush"
     end
-    with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _[_, __n], _)) do
+    with(Multiset.(_[__, _n], _[__, __n], _[__, __n], _[__, __n], __)) do
       "Four of kind"
     end
-    with(Multiset.(_[_, _m], _[_, __m], _[_, __m], _[_, _n], _[_, __n])) do
+    with(Multiset.(_[__, _m], _[__, __m], _[__, __m], _[__, _n], _[__, __n])) do
       "Full house"
     end
     with(Multiset.(_[_s, _], _[__s, _], _[__s, _], _[__s, _], _[__s, _])) do
       "Flush"
     end
-    with(Multiset.(_[_, _n], _[_, __("n+1")], _[_, __("n+2")], _[_, __("n+3")], _[_, __("n+4")])) do
+    with(Multiset.(_[__, _n], _[__, __("n+1")], _[__, __("n+2")], _[__, __("n+3")], _[__, __("n+4")])) do
       "Straight"
     end
-    with(Multiset.(_[_, _n], _[_, __n], _[_, __n], _, _)) do
+    with(Multiset.(_[__, _n], _[__, __n], _[__, __n], __, __)) do
       "Three of kind"
     end
-    with(Multiset.(_[_, _m], _[_, __m], _[_, _n], _[_, __n], _)) do
+    with(Multiset.(_[__, _m], _[__, __m], _[__, _n], _[__, __n], __)) do
       "Two pairs"
     end
-    with(Multiset.(_[_, _n], _[_, __n], _, _, _)) do
+    with(Multiset.(_[__, _n], _[__, __n], __, __, __)) do
       "One pair"
     end
-    with(Multiset.(_, _, _, _, _)) do
+    with(Multiset.(__, __, __, __, __)) do
       "Nothing"
     end
   end

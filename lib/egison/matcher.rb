@@ -7,12 +7,11 @@ end
 class << Multiset
   def uncons(val)
     accept_array_only(val)
-    rets = val.map {|x|
-      val2 = val.clone
-      val2.delete_at(val2.find_index(x))
-      [x, val2]
-    }
-    rets
+    match_all(val) do
+      with(List.(*_hs, _x, *_ts)) do
+        [x, hs + ts]
+      end
+    end
   end
   
   def unjoin(val)
@@ -39,12 +38,13 @@ end
 class << Set
   def uncons(val)
     accept_array_only(val)
-    rets = val.map {|x|
-      val2 = val.clone
-      [x, val2]
-    }
-    rets
+    match_all(val) do
+      with(List.(*_, _x, *_)) do
+        [x, val]
+      end
+    end
   end
+  
   def unjoin(val)
     accept_array_only(val)
     val2 = val.clone

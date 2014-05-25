@@ -364,6 +364,8 @@ module Kernel
       env.instance_eval(&block)
     end
   end
+  
+  alias match_single match
 
 end
 

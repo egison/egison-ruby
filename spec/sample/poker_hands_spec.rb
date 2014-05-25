@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'egison'
 
-alias match_single match
 def poker_hands cs
   match_single(cs) do
     with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do

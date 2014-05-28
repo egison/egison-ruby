@@ -1,6 +1,6 @@
-# The Gem for Non-linear Pattern Matching against Unfree Data Types
+# The Gem for Egison Pattern Matching
 
-This Gem provides a way to use non-linear pattern-matching against unfree data types.
+This Gem provides a way to access non-linear pattern-matching against unfree data types from Ruby.
 We can directly express pattern-matching against lists, multisets, and sets using this gem.
 
 ## Installation
@@ -146,7 +146,24 @@ match_all([1, 2, 3, 2, 5]) do
 end  #=> [2,2]
 ```
 
-## Demonstration - Poker Hands
+## Demonstrations
+
+### Combinations
+
+We can enumerates all combinations of the elements of a collection with pattern-matching.
+
+```
+require 'egison'
+
+p(match_all([1,2,3,4,5]) do with(List.(*_, _x, *_, _y, *_)) { [x, y] } end)
+#=> [[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]]
+
+p(match_all([1,2,3,4,5]) do with(List.(*_, _x, *_, _y, *_, _z, *_)) { [x, y, z] } end)
+#=> [[1, 2, 3], [1, 2, 4], [1, 2, 5], [1, 3, 4], [1, 3, 5], [1, 4, 5], [2, 3, 4], [2, 3, 5], [2, 4, 5], [3, 4, 5]]
+
+```
+
+### Poker Hands
 
 We can write patterns for all poker-hands in one single pattern.
 It is as follow.

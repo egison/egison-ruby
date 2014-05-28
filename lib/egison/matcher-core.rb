@@ -31,11 +31,11 @@ class << List
     xs = []
     ys = val2.clone
     rets = [[xs, ys]]
-    while !val2.empty? do
+    until val2.empty? do
       x = val2.shift
       ys = val2.clone
-      xs = xs + [x]
-      rets = rets + [[xs, ys]]
+      xs += [x]
+      rets += [[xs, ys]]
     end
     rets
   end

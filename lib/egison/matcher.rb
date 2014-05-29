@@ -1,5 +1,6 @@
 require 'egison/core'
 require 'egison/matcher-core'
+require 'set'
 
 class Multiset
 end
@@ -30,9 +31,6 @@ class << Multiset
       rets
     end
   end
-end
-
-class Set
 end
 
 class << Set

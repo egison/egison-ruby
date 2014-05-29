@@ -19,30 +19,30 @@ module PatternMatch
   class MatchingStateStack
     attr_accessor :states
     attr_accessor :results
-    
+
     def initialize(pat, tgt)
       @states = [MatchingState.new(pat, tgt)]
       @results = []
     end
 
     def match
-      while !@states.empty? do
+      until @states.empty? do
         process
       end
       @results
     end
-    
+
     def process
       state = @states.shift
       rets = state.process
       new_states = []
-      rets.each { |ret|
-        if ret.atoms.empty? then
-          @results = @results + [ret.bindings]
+      rets.each do |ret|
+        if ret.atoms.empty?
+          @results += [ret.bindings]
         else
-          new_states = new_states + [ret]
+          new_states += [ret]
         end
-      }
+      end
       @states = new_states + @states
     end
   end
@@ -58,18 +58,18 @@ module PatternMatch
     def process
       atom = @atoms.shift
       rets = atom.first.match(atom.last, @bindings)
-      rets.map { |new_atoms, new_bindings|
-        new_state = self.clone
+      rets.map do |new_atoms, new_bindings|
+        new_state = clone
         new_state.atoms = new_atoms + new_state.atoms
-        new_state.bindings = new_state.bindings + new_bindings
+        new_state.bindings += new_bindings
         new_state
-      }
+      end
     end
   end
 
   class Pattern
     attr_accessor :quantified
-    
+
     def initialize
     end
 
@@ -98,8 +98,8 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
-      if subpatterns.empty? then
-        if tgt.empty? then
+      if subpatterns.empty?
+        if tgt.empty?
           return [[[], []]]
         else
           return []
@@ -107,19 +107,23 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.quantified then
-          if subpatterns.empty? then
+        if px.quantified
+          if subpatterns.empty?
             [[[[px.pattern, tgt]], []]]
           else
             unjoineds = @matcher.unjoin(tgt)
-            unjoineds.map { |xs, ys| [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []] }
+            unjoineds.map do |xs, ys|
+              [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []]
+            end
           end
         else
-          if tgt.empty? then
+          if tgt.empty?
             []
           else
             unconseds = @matcher.uncons(tgt)
-            unconseds.map { |x, xs| [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []] }
+            unconseds.map do |x, xs|
+              [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
+            end
           end
         end
       end
@@ -158,7 +162,7 @@ module PatternMatch
 
     def match(tgt, bindings)
       val = with_bindings(@ctx, bindings, {:expr => @expr}) { eval expr }
-      if val.__send__(:===, tgt) then
+      if val.__send__(:===, tgt)
         [[[], []]]
       else
         []
@@ -192,7 +196,7 @@ module PatternMatch
     end
 
     def binding_module(obj)
-      m = obj.singleton_class.ancestors.find {|i| i.kind_of?(BindingModule) }
+      m = obj.singleton_class.ancestors.find { |i| i.kind_of?(BindingModule) }
       unless m
         m = BindingModule.new
         obj.singleton_class.class_eval do
@@ -209,7 +213,7 @@ module PatternMatch
 
   class PatternCollection < Pattern
     attr_accessor :pattern
-    
+
     def initialize(pat)
       super()
       @quantified = true
@@ -272,7 +276,7 @@ module PatternMatch
         undefined
       end
     end
-    
+
     def ___(*vals)
       case vals.length
       when 0
@@ -302,7 +306,7 @@ module PatternMatch
     end
 
     def binding_module(obj)
-      m = obj.singleton_class.ancestors.find {|i| i.kind_of?(BindingModule) }
+      m = obj.singleton_class.ancestors.find { |i| i.kind_of?(BindingModule) }
       unless m
         m = BindingModule.new
         obj.singleton_class.class_eval do
@@ -323,7 +327,7 @@ module PatternMatch
       tgt = @tgt
       mstack = MatchingStateStack.new(pat,tgt)
       mstack.match
-      if mstack.results.empty? then
+      if mstack.results.empty?
         nil
       else
         ret = with_bindings(ctx, mstack.results.first, &block)
@@ -332,7 +336,7 @@ module PatternMatch
     rescue PatternNotMatch
     end
   end
-    
+
   class PatternNotMatch < Exception; end
   class PatternMatchError < StandardError; end
   class NoMatchingPatternError < PatternMatchError; end
@@ -365,8 +369,7 @@ module Kernel
       env.instance_eval(&block)
     end
   end
-  
-  alias match_single match
 
+  alias match_single match
 end
 

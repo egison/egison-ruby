@@ -1,5 +1,5 @@
 require 'egison/version'
-require 'continuation'
+# require 'continuation'
 
 module PatternMatch
   module Matchable
@@ -13,6 +13,114 @@ module PatternMatch
 
     def pattern_matcher(*subpatterns)
       PatternWithMatcher.new(self, *subpatterns)
+    end
+  end
+
+  class LazyArray
+    include Enumerable
+
+    class OrgEnum
+      def initialize(org_enum)
+        if org_enum.kind_of?(::Array)
+          # @org_enum = org_enum
+          @cache = org_enum
+          @index = -1
+          @terminated = true
+        else
+          @org_enum = org_enum.to_enum
+          @cache = []
+          @index = -1
+          @terminated = false
+        end
+      end
+
+      def next
+        index = @index += 1
+        return @cache[index] if @cache.size > index
+        raise StopIteration('iteration reached an end') if @terminated
+        el = @org_enum.next
+        @cache << el
+        el
+      rescue StopIteration => ex
+        @index -= 1
+        @terminated = true
+        raise ex
+      end
+
+      def rewind(index=0)
+        @index = index - 1
+      end
+    end
+
+    def initialize(org_enum)
+      @org_enum = OrgEnum.new(org_enum)
+      @cache = []
+      @terminated = false
+    end
+
+    def each(&block)
+      return to_enum unless block_given?
+      @cache.each(&block)
+      return if @terminated
+      while true  # StopIteration will NOT be raised if `loop do ... end`
+        el = @org_enum.next
+        @cache.push(el)
+        block.(el)
+      end
+    rescue StopIteration => ex
+      @terminated = true
+    end
+
+    def shift
+      if @cache.size > 0
+        @cache.shift
+      elsif @terminated
+        nil
+      else
+        begin
+          @org_enum.next
+        rescue StopIteration => ex
+          @terminated = true
+          nil
+        end
+      end
+    end
+
+    def unshift(*obj)
+      @cache.unshift(*obj)
+      self
+    end
+
+    def empty?
+      # @terminated && @cache.empty?
+      return false unless @cache.empty?
+      return true if @terminated
+      begin
+        @cache << @org_enum.next
+        false
+      rescue StopIteration => ex
+        @terminated = true
+        true
+      end
+    end
+
+    def size
+      @terminated ? @cache.size : nil
+    end
+    alias :length :size
+
+    def clone
+      obj = super
+      obj.instance_eval{
+        @org_enum = @org_enum.clone
+        @cache = @cache.clone
+      }
+      obj
+    end
+    alias :dup :clone
+
+    def inspect
+      "\#<#{self.class.name}:#{self.object_id}#{@terminated ? @cache.inspect : "[#{@cache.join(', ')}...]"}>"
     end
   end
 
@@ -47,6 +155,36 @@ module PatternMatch
     end
   end
 
+  class MatchingStateStream
+    attr_accessor :states
+
+    def initialize(pat, tgt)
+      @states = [MatchingState.new(pat, tgt)]
+    end
+
+    def match(&block)
+      return to_enum :match unless block_given?
+      until @states.empty? do
+        process(&block)
+      end
+      self
+    end
+
+    def process(state=nil, &block)
+      state ||= @states.shift
+      # new_states = []
+      state.process_stream do |ret|
+        if ret.atoms.empty?
+          block.(ret.bindings)
+        else
+          # new_states += [ret]
+          process(ret, &block)
+        end
+      end
+      # @states = new_states + @states
+    end
+  end
+
   class MatchingState
     attr_accessor :atoms, :bindings
 
@@ -65,6 +203,16 @@ module PatternMatch
         new_state
       end
     end
+
+    def process_stream(&block)
+      atom = @atoms.shift
+      atom.first.match_stream(atom.last, @bindings) do |new_atoms, new_bindings|
+        new_state = clone
+        new_state.atoms = new_atoms + new_state.atoms
+        new_state.bindings += new_bindings
+        block.(new_state)
+      end
+    end
   end
 
   class Pattern
@@ -74,6 +222,9 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
+    end
+
+    def match_stream(tgt, bindings, &block)
     end
 
     def to_a
@@ -128,6 +279,32 @@ module PatternMatch
         end
       end
     end
+
+    def match_stream(tgt, bindings, &block)
+      if subpatterns.empty?
+        if tgt.empty?
+          return block.([[], []])
+        end
+      else
+        subpatterns = @subpatterns.clone
+        px = subpatterns.shift
+        if px.quantified
+          if subpatterns.empty?
+            block.([[[px.pattern, tgt]], []])
+          else
+            @matcher.unjoin_stream(tgt) do |xs, ys|
+              block.([[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], [])
+            end
+          end
+        else
+          unless tgt.empty?
+            @matcher.uncons_stream(tgt) do |x, xs|
+              block.([[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], [])
+            end
+          end
+        end
+      end
+    end
   end
 
   class Wildcard < PatternElement
@@ -137,6 +314,10 @@ module PatternMatch
 
     def match(tgt, bindings)
       [[[], []]]
+    end
+
+    def match_stream(tgt, bindings, &block)
+      block.([[], []])
     end
   end
 
@@ -150,6 +331,10 @@ module PatternMatch
 
     def match(tgt, bindings)
       [[[], [[name, tgt]]]]
+    end
+
+    def match_stream(tgt, bindings, &block)
+      block.([[], [[name, tgt]]])
     end
   end
 
@@ -166,6 +351,15 @@ module PatternMatch
         [[[], []]]
       else
         []
+      end
+    end
+
+    def match_stream(tgt, bindings, &block)
+      val = with_bindings(@ctx, bindings, {:expr => @expr}) { eval expr }
+      if val.__send__(:===, tgt)
+        block.([[], []])
+      # else
+      #   []
       end
     end
 
@@ -337,6 +531,20 @@ module PatternMatch
     end
   end
 
+  class EnvE < Env
+    def with(pat, &block)
+      ctx = @ctx
+      tgt = @tgt
+      mstack = MatchingStateStream.new(pat,tgt)
+      ::Enumerator.new do |y|
+        mstack.match do |bindings|
+          y << with_bindings(ctx, bindings, &block)
+        end
+      end
+    rescue PatternNotMatch
+    end
+  end
+
   class PatternNotMatch < Exception; end
   class PatternMatchError < StandardError; end
   class NoMatchingPatternError < PatternMatchError; end
@@ -351,7 +559,7 @@ module PatternMatch
         private_constant c
       end
     end
-    private_constant :Env, :Env2
+    private_constant :Env, :Env2, :EnvE
   end
 end
 
@@ -360,6 +568,14 @@ module Kernel
 
   def match_all(tgt, &block)
     env = PatternMatch.const_get(:Env).new(self, tgt)
+    env.instance_eval(&block)
+  end
+
+  def match_stream(tgt, &block)
+    if !(tgt.kind_of?(Array) || tgt.kind_of?(PatternMatch::LazyArray))
+      tgt = PatternMatch::LazyArray.new(tgt)
+    end
+    env = PatternMatch.const_get(:EnvE).new(self, tgt)
     env.instance_eval(&block)
   end
 
@@ -372,4 +588,3 @@ module Kernel
 
   alias match_single match
 end
-

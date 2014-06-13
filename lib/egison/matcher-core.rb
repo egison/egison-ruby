@@ -1,4 +1,5 @@
 require 'egison/core'
+require 'egison/lazyarray'
 
 class Class
   include PatternMatch::Matchable
@@ -19,7 +20,7 @@ class Class
 
   def test_conv_lazy_array(val)
     raise PatternMatch::PatternNotMatch unless val.respond_to?(:each)
-    PatternMatch::LazyArray.new(val)
+    Egison::LazyArray.new(val)
   end
 end
 
@@ -35,7 +36,7 @@ class << List
   end
 
   def uncons_stream(val, &block)
-    if !(val.kind_of?(Array) || val.kind_of?(PatternMatch::LazyArray))
+    if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
       val = test_conv_lazy_array(val)
     end
     val2 = val.clone
@@ -59,7 +60,7 @@ class << List
   end
 
   def unjoin_stream(val, &block)
-    if !(val.kind_of?(Array) || val.kind_of?(PatternMatch::LazyArray))
+    if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
       val = test_conv_lazy_array(val)
     end
     val2 = val.clone

@@ -1,4 +1,5 @@
 require 'egison/core'
+require 'egison/lazyarray'
 require 'egison/matcher-core'
 require 'set'
 
@@ -16,7 +17,7 @@ class << Multiset
   end
 
   def uncons_stream(val, &block)
-    if !(val.kind_of?(Array) || val.kind_of?(PatternMatch::LazyArray))
+    if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
       val = test_conv_lazy_array(val)
     end
     stream = match_stream(val) {
@@ -45,7 +46,7 @@ class << Multiset
   end
 
   def unjoin_stream(val, &block)
-    if !(val.kind_of?(Array) || val.kind_of?(PatternMatch::LazyArray))
+    if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
       val = test_conv_lazy_array(val)
     end
     val2 = val.clone
@@ -56,7 +57,7 @@ class << Multiset
     else
       x = val2.shift
       ys = val2.clone
-      rets_stream = PatternMatch::LazyArray.new(to_enum(:unjoin_stream, ys))
+      rets_stream = Egison::LazyArray.new(to_enum(:unjoin_stream, ys))
       # rets_stream.each{|xs2, ys2| block.([xs2, [x] + ys2])}
       rets_stream.each{|xs2, ys2| block.([xs2, ys2.clone.unshift(x)])}
       # rets_stream.each{|xs2, ys2| block.([[x] + xs2, ys2])}
@@ -76,7 +77,7 @@ class << Set
   end
 
   def uncons_stream(val, &block)
-    if !(val.kind_of?(Array) || val.kind_of?(PatternMatch::LazyArray))
+    if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
       val = test_conv_lazy_array(val)
     end
     stream = match_stream(val) {
@@ -105,7 +106,7 @@ class << Set
   end
 
   def unjoin_stream(val, &block)
-    if !(val.kind_of?(Array) || val.kind_of?(PatternMatch::LazyArray))
+    if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
       val = test_conv_lazy_array(val)
     end
     val2 = val.clone
@@ -116,7 +117,7 @@ class << Set
     else
       x = val2.shift
       ys2 = val2.clone
-      rets_stream = PatternMatch::LazyArray.new(to_enum(:unjoin_stream, ys2))
+      rets_stream = Egison::LazyArray.new(to_enum(:unjoin_stream, ys2))
       rets_stream.each{|xs2, _| block.([xs2, ys])}
       rets_stream.each{|xs2, _| block.([xs2.clone.unshift(x), ys])}
     end

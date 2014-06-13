@@ -1,5 +1,6 @@
 require 'egison/version'
 # require 'continuation'
+require 'egison/lazyarray'
 
 module PatternMatch
   module Matchable
@@ -13,114 +14,6 @@ module PatternMatch
 
     def pattern_matcher(*subpatterns)
       PatternWithMatcher.new(self, *subpatterns)
-    end
-  end
-
-  class LazyArray
-    include Enumerable
-
-    class OrgEnum
-      def initialize(org_enum)
-        if org_enum.kind_of?(::Array)
-          # @org_enum = org_enum
-          @cache = org_enum
-          @index = -1
-          @terminated = true
-        else
-          @org_enum = org_enum.to_enum
-          @cache = []
-          @index = -1
-          @terminated = false
-        end
-      end
-
-      def next
-        index = @index += 1
-        return @cache[index] if @cache.size > index
-        raise StopIteration('iteration reached an end') if @terminated
-        el = @org_enum.next
-        @cache << el
-        el
-      rescue StopIteration => ex
-        @index -= 1
-        @terminated = true
-        raise ex
-      end
-
-      def rewind(index=0)
-        @index = index - 1
-      end
-    end
-
-    def initialize(org_enum)
-      @org_enum = OrgEnum.new(org_enum)
-      @cache = []
-      @terminated = false
-    end
-
-    def each(&block)
-      return to_enum unless block_given?
-      @cache.each(&block)
-      return if @terminated
-      while true  # StopIteration will NOT be raised if `loop do ... end`
-        el = @org_enum.next
-        @cache.push(el)
-        block.(el)
-      end
-    rescue StopIteration => ex
-      @terminated = true
-    end
-
-    def shift
-      if @cache.size > 0
-        @cache.shift
-      elsif @terminated
-        nil
-      else
-        begin
-          @org_enum.next
-        rescue StopIteration => ex
-          @terminated = true
-          nil
-        end
-      end
-    end
-
-    def unshift(*obj)
-      @cache.unshift(*obj)
-      self
-    end
-
-    def empty?
-      # @terminated && @cache.empty?
-      return false unless @cache.empty?
-      return true if @terminated
-      begin
-        @cache << @org_enum.next
-        false
-      rescue StopIteration => ex
-        @terminated = true
-        true
-      end
-    end
-
-    def size
-      @terminated ? @cache.size : nil
-    end
-    alias :length :size
-
-    def clone
-      obj = super
-      obj.instance_eval{
-        @org_enum = @org_enum.clone
-        @cache = @cache.clone
-      }
-      obj
-    end
-    alias :dup :clone
-
-    def inspect
-      "\#<#{self.class.name}:#{self.object_id}#{@terminated ? @cache.inspect : "[#{@cache.join(', ')}...]"}>"
     end
   end
 
@@ -572,8 +465,8 @@ module Kernel
   end
 
   def match_stream(tgt, &block)
-    if !(tgt.kind_of?(Array) || tgt.kind_of?(PatternMatch::LazyArray))
-      tgt = PatternMatch::LazyArray.new(tgt)
+    if !(tgt.kind_of?(Array) || tgt.kind_of?(Egison::LazyArray))
+      tgt = Egison::LazyArray.new(tgt)
     end
     env = PatternMatch.const_get(:EnvE).new(self, tgt)
     env.instance_eval(&block)

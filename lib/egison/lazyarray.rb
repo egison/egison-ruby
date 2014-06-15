@@ -4,7 +4,6 @@ module Egison
 
     class OrgEnum
       def initialize(org_enum)
-        # det_infinite(org_enum)
         @src_enums = []
         if org_enum.kind_of?(::Array)
           @org_enum = [].to_enum  # DUMMY
@@ -35,21 +34,11 @@ module Egison
         @index = index - 1
       end
 
-      # def infinite?
-      #   @is_infinite
-      # end
-
-      # def size
-      #   return @cache.size if @terminated
-      #   return Float::INFINITY if infinite?
-      #   nil
-      # end
-
       def clone
         obj = super
-        obj.instance_eval {
+        obj.instance_eval do
           @src_enums = @src_enums.clone
-        }
+        end
         obj
       end
 
@@ -76,29 +65,13 @@ module Egison
             end
             @org_enum = @src_enums.shift.to_enum
             @cache = @cache.clone
-          rescue LocalJumpError => err
-            p @org_enum
-            p err
-            p err.reason
-            # p err.exit_value
           end
         end
         el
       end
-      # def det_infinite(org_enum)
-      #   return true if defined?(@is_infinite) && @is_infinite
-      #   @is_infinite = if org_enum.respond_to?(:size)
-      #     # org_enum.size.to_f.infinite?
-      #     if org_enum.size.nil?
-      #       nil
-      #     else
-      #       !org_enum.size.to_f.finite?
-      #     end
-      #   else
-      #     nil
-      #   end
-      # end
     end
+
+    private_constant :OrgEnum if respond_to?(:private_constant)
 
     def initialize(org_enum)
       @org_enum = OrgEnum.new(org_enum)
@@ -140,7 +113,6 @@ module Egison
     end
 
     def empty?
-      # @terminated && @cache.empty?
       return false unless @cache.empty?
       return true if @terminated
       begin
@@ -153,16 +125,16 @@ module Egison
     end
 
     def size
-      @terminated ? @cache.size : @org_enum.size
+      @terminated ? @cache.size : nil
     end
     alias :length :size
 
     def clone
       obj = super
-      obj.instance_eval{
+      obj.instance_eval do
         @org_enum = @org_enum.clone
         @cache = @cache.clone
-      }
+      end
       obj
     end
     alias :dup :clone
@@ -176,14 +148,6 @@ module Egison
     def + other
       clone.concat(other)
     end
-
-    # def to_a(recursive=nil)
-    #   return super() unless recursive
-    #   # return self if recursive == :if_finite && size.to_f.finite?
-    #   map do |el|
-    #     el.kind_of?(self.class) ? el.to_a(:if_finite) : el
-    #   end
-    # end
 
     def inspect
       "\#<#{self.class.name}#{@terminated ? @cache.inspect : "[#{@cache.join(', ')}...]"}>"

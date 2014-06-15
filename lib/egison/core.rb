@@ -49,51 +49,35 @@ module PatternMatch
   end
 
   class MatchingStateStream
-    attr_accessor :states
-
     def initialize(pat, tgt)
       @states = [MatchingState.new(pat, tgt)]
+      @processes = []
     end
 
     def match(&block)
-      return to_enum :match unless block_given?
-      until @states.empty? do
-        process(&block)
+      state = @states.shift
+      @processes << Egison::LazyArray.new(state.process_stream)
+      until @states.empty? && @processes.empty?
+        unless @processes.empty?
+          process(@processes.shift, &block)
+        end
+        unless @states.empty?
+          state = @states.shift
+          process(Egison::LazyArray.new(state.process_stream), &block)
+        end
       end
-      self
     end
 
-    def process(&block)
-      new_states = []
-      processes = []
-      sub_block = ->ret {
+    def process(process_iter, &block)
+      unless process_iter.empty?
+        @processes << process_iter
+        ret = process_iter.shift
         if ret.atoms.empty?
           block.(ret.bindings)
         else
-          # new_states += [ret]
-          new_states << ret
-        end
-      }
-      state = @states.shift
-      processes << Egison::LazyArray.new(state.to_enum(:process_stream))
-      until new_states.empty? && processes.empty?
-        unless processes.empty?
-          process_enum = processes.shift
-          unless process_enum.empty?
-            processes << process_enum
-            sub_block.(process_enum.shift)
-          end
-        end
-        unless new_states.empty?
-          state = new_states.shift
-          process_enum = Egison::LazyArray.new(state.to_enum(:process_stream))
-          unless process_enum.empty?
-            processes << process_enum
-            sub_block.(process_enum.shift)
-          end
+          @states << ret
         end
       end
-      # @states = new_states + @states
     end
   end
 
@@ -117,6 +101,7 @@ module PatternMatch
     end
 
     def process_stream(&block)
+      return to_enum :process_stream unless block_given?
       atom = @atoms.shift
       atom.first.match_stream(atom.last, @bindings) do |new_atoms, new_bindings|
         new_state = clone
@@ -137,6 +122,7 @@ module PatternMatch
     end
 
     def match_stream(tgt, bindings, &block)
+      match(tgt, bindings).each(&block)
     end
 
     def to_a
@@ -227,10 +213,6 @@ module PatternMatch
     def match(tgt, bindings)
       [[[], []]]
     end
-
-    def match_stream(tgt, bindings, &block)
-      block.([[], []])
-    end
   end
 
   class PatternVariable < PatternElement
@@ -243,10 +225,6 @@ module PatternMatch
 
     def match(tgt, bindings)
       [[[], [[name, tgt]]]]
-    end
-
-    def match_stream(tgt, bindings, &block)
-      block.([[], [[name, tgt]]])
     end
   end
 
@@ -263,15 +241,6 @@ module PatternMatch
         [[[], []]]
       else
         []
-      end
-    end
-
-    def match_stream(tgt, bindings, &block)
-      val = with_bindings(@ctx, bindings, {:expr => @expr}) { eval expr }
-      if val.__send__(:===, tgt)
-        block.([[], []])
-      # else
-      #   []
       end
     end
 

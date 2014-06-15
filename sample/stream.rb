@@ -10,3 +10,11 @@ twin_primes = match_stream(Prime) {
 }
 
 p twin_primes.take(10)
+
+def nats
+  (1..Float::INFINITY)
+end
+
+p match_stream(nats){ with(Multiset.(_m, _n, *_)) { [m, n] } }.take(10)
+
+p match_stream(nats){ with(Set.(_m, _n, *_)) { [m, n] } }.take(10)

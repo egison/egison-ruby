@@ -5,8 +5,9 @@ module Egison
     class OrgEnum
       def initialize(org_enum)
         # det_infinite(org_enum)
+        @src_enums = []
         if org_enum.kind_of?(::Array)
-          # @org_enum = org_enum
+          @org_enum = [].to_enum  # DUMMY
           @cache = org_enum
           @index = -1
           @terminated = true
@@ -21,13 +22,12 @@ module Egison
       def next
         index = @index += 1
         return @cache[index] if @cache.size > index
-        raise StopIteration('iteration reached an end') if @terminated
-        el = @org_enum.next
+        raise StopIteration.new('iteration reached an end') if @terminated
+        el = org_enum_next
         @cache << el
         el
       rescue StopIteration => ex
         @index -= 1
-        @terminated = true
         raise ex
       end
 
@@ -35,17 +35,56 @@ module Egison
         @index = index - 1
       end
 
-      def infinite?
-        @is_infinite
+      # def infinite?
+      #   @is_infinite
+      # end
+
+      # def size
+      #   return @cache.size if @terminated
+      #   return Float::INFINITY if infinite?
+      #   nil
+      # end
+
+      def clone
+        obj = super
+        obj.instance_eval {
+          @src_enums = @src_enums.clone
+        }
+        obj
       end
 
-      def size
-        return @cache.size if @terminated
-        return Float::INFINITY if infinite?
-        nil
+      def concat other
+        if @terminated && other.kind_of?(::Array)
+          @cache.concat(other)
+        else
+          @src_enums.push(other)
+          @terminated = false
+        end
+        self
       end
 
       private
+      def org_enum_next
+        el = nil
+        while el.nil?
+          begin
+            el = @org_enum.next
+          rescue StopIteration => ex
+            if @src_enums.empty?
+              @terminated = true
+              raise ex
+            end
+            @org_enum = @src_enums.shift.to_enum
+            @cache = @cache.clone
+          rescue LocalJumpError => err
+            p @org_enum
+            p err
+            p err.reason
+            # p err.exit_value
+          end
+        end
+        el
+      end
       # def det_infinite(org_enum)
       #   return true if defined?(@is_infinite) && @is_infinite
       #   @is_infinite = if org_enum.respond_to?(:size)
@@ -127,6 +166,16 @@ module Egison
       obj
     end
     alias :dup :clone
+
+    def concat other
+      @org_enum.concat(other)
+      @terminated = false
+      self
+    end
+
+    def + other
+      clone.concat(other)
+    end
 
     # def to_a(recursive=nil)
     #   return super() unless recursive

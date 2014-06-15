@@ -63,15 +63,34 @@ module PatternMatch
       self
     end
 
-    def process(state=nil, &block)
-      state ||= @states.shift
-      # new_states = []
-      state.process_stream do |ret|
+    def process(&block)
+      new_states = []
+      processes = []
+      sub_block = ->ret {
         if ret.atoms.empty?
           block.(ret.bindings)
         else
           # new_states += [ret]
-          process(ret, &block)
+          new_states << ret
+        end
+      }
+      state = @states.shift
+      processes << Egison::LazyArray.new(state.to_enum(:process_stream))
+      until new_states.empty? && processes.empty?
+        unless processes.empty?
+          process_enum = processes.shift
+          unless process_enum.empty?
+            processes << process_enum
+            sub_block.(process_enum.shift)
+          end
+        end
+        unless new_states.empty?
+          state = new_states.shift
+          process_enum = Egison::LazyArray.new(state.to_enum(:process_stream))
+          unless process_enum.empty?
+            processes << process_enum
+            sub_block.(process_enum.shift)
+          end
         end
       end
       # @states = new_states + @states

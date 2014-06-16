@@ -1,5 +1,6 @@
 require 'egison/version'
-require 'continuation'
+# require 'continuation'
+require 'egison/lazyarray'
 
 module PatternMatch
   module Matchable
@@ -47,6 +48,39 @@ module PatternMatch
     end
   end
 
+  class MatchingStateStream
+    def initialize(pat, tgt)
+      @states = [MatchingState.new(pat, tgt)]
+      @processes = []
+    end
+
+    def match(&block)
+      state = @states.shift
+      @processes << Egison::LazyArray.new(state.process_stream)
+      until @states.empty? && @processes.empty?
+        unless @processes.empty?
+          process(@processes.shift, &block)
+        end
+        unless @states.empty?
+          state = @states.shift
+          process(Egison::LazyArray.new(state.process_stream), &block)
+        end
+      end
+    end
+
+    def process(process_iter, &block)
+      unless process_iter.empty?
+        @processes << process_iter
+        ret = process_iter.shift
+        if ret.atoms.empty?
+          block.(ret.bindings)
+        else
+          @states << ret
+        end
+      end
+    end
+  end
+
   class MatchingState
     attr_accessor :atoms, :bindings
 
@@ -65,6 +99,17 @@ module PatternMatch
         new_state
       end
     end
+
+    def process_stream(&block)
+      return to_enum :process_stream unless block_given?
+      atom = @atoms.shift
+      atom.first.match_stream(atom.last, @bindings) do |new_atoms, new_bindings|
+        new_state = clone
+        new_state.atoms = new_atoms + new_state.atoms
+        new_state.bindings += new_bindings
+        block.(new_state)
+      end
+    end
   end
 
   class Pattern
@@ -74,6 +119,10 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
+    end
+
+    def match_stream(tgt, bindings, &block)
+      match(tgt, bindings).each(&block)
     end
 
     def to_a
@@ -123,6 +172,32 @@ module PatternMatch
             unconseds = @matcher.uncons(tgt)
             unconseds.map do |x, xs|
               [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
+            end
+          end
+        end
+      end
+    end
+
+    def match_stream(tgt, bindings, &block)
+      if subpatterns.empty?
+        if tgt.empty?
+          return block.([[], []])
+        end
+      else
+        subpatterns = @subpatterns.clone
+        px = subpatterns.shift
+        if px.quantified
+          if subpatterns.empty?
+            block.([[[px.pattern, tgt]], []])
+          else
+            @matcher.unjoin_stream(tgt) do |xs, ys|
+              block.([[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], [])
+            end
+          end
+        else
+          unless tgt.empty?
+            @matcher.uncons_stream(tgt) do |x, xs|
+              block.([[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], [])
             end
           end
         end
@@ -337,6 +412,20 @@ module PatternMatch
     end
   end
 
+  class EnvE < Env
+    def with(pat, &block)
+      ctx = @ctx
+      tgt = @tgt
+      mstack = MatchingStateStream.new(pat,tgt)
+      ::Enumerator.new do |y|
+        mstack.match do |bindings|
+          y << with_bindings(ctx, bindings, &block)
+        end
+      end
+    rescue PatternNotMatch
+    end
+  end
+
   class PatternNotMatch < Exception; end
   class PatternMatchError < StandardError; end
   class NoMatchingPatternError < PatternMatchError; end
@@ -351,7 +440,7 @@ module PatternMatch
         private_constant c
       end
     end
-    private_constant :Env, :Env2
+    private_constant :Env, :Env2, :EnvE
   end
 end
 
@@ -360,6 +449,14 @@ module Kernel
 
   def match_all(tgt, &block)
     env = PatternMatch.const_get(:Env).new(self, tgt)
+    env.instance_eval(&block)
+  end
+
+  def match_stream(tgt, &block)
+    if !(tgt.kind_of?(Array) || tgt.kind_of?(Egison::LazyArray))
+      tgt = Egison::LazyArray.new(tgt)
+    end
+    env = PatternMatch.const_get(:EnvE).new(self, tgt)
     env.instance_eval(&block)
   end
 
@@ -372,4 +469,3 @@ module Kernel
 
   alias match_single match
 end
-

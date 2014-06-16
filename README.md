@@ -149,19 +149,17 @@ end  #=> [2,2]
 ### Pattern Matching against Stream (Infinite List)
 
 We can do pattern-matching against streams with the `match_stream` expression.
-The following code enumerates all twin primes with pattern-matching!
 
 ```
-require 'egison'
-require 'prime'
+def nats
+  (1..Float::INFINITY)
+end
 
-twin_primes = match_stream(Prime) {
-  with(List.(*_, _x, __("x + 2"), *_)) {
-    [x, x + 2]
-  }
-}
+match_stream(nats){ with(Multiset.(_m, _n, *_)) { [m, n] } }.take(10)
+#=>[[1, 2], [1, 3], [2, 1], [1, 4], [2, 3], [3, 1], [1, 5], [2, 4], [3, 2], [4, 1]]
 
-p twin_primes.take(10)
+match_stream(nats){ with(Set.(_m, _n, *_)) { [m, n] } }.take(10)
+#=>[[1, 1], [1, 2], [2, 1], [1, 3], [2, 2], [3, 1], [1, 4], [2, 3], [3, 2], [4, 1]]
 ```
 
 ## Demonstrations
@@ -226,6 +224,25 @@ p(poker_hands([["diamond", 1], ["diamond", 3], ["diamond", 5], ["diamond", 4], [
 p(poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond", 2]])) #=> "Full house"
 p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Straight"
 p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Nothing"
+```
+
+### Twin Primes
+
+The following code enumerates all twin primes with pattern-matching!
+I believe it is also a really exciting demonstration.
+
+```
+require 'egison'
+require 'prime'
+
+twin_primes = match_stream(Prime) {
+  with(List.(*_, _x, __("x + 2"), *_)) {
+    [x, x + 2]
+  }
+}
+
+p twin_primes.take(10)
+#=>[[3, 5], [5, 7], [11, 13], [17, 19], [29, 31], [41, 43], [59, 61], [71, 73], [101, 103], [107, 109]]
 ```
 
 You can find more demonstrations in the [`sample`](https://github.com/egison/egison-ruby/tree/master/sample) directory.

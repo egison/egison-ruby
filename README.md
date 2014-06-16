@@ -146,6 +146,24 @@ match_all([1, 2, 3, 2, 5]) do
 end  #=> [2,2]
 ```
 
+### Pattern Matching against Stream (Infinite List)
+
+We can do pattern-matching against streams with the `match_stream` expression.
+The following code enumerates all twin primes with pattern-matching!
+
+```
+require 'egison'
+require 'prime'
+
+twin_primes = match_stream(Prime) {
+  with(List.(*_, _x, __("x + 2"), *_)) {
+    [x, x + 2]
+  }
+}
+
+p twin_primes.take(10)
+```
+
 ## Demonstrations
 
 ### Combinations

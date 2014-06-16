@@ -254,7 +254,6 @@ Egison is the pattern-matching oriented pure functional programming language.
 Actually, the original pattern-matching system of Egison is more powerful.
 For example, we can do following things in the original Egison.
 
-- We can pattern-match against infinite lists.
 - We can define new pattern-constructors.
 - We can modularize useful patterns.
 

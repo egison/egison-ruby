@@ -27,10 +27,12 @@ $ bundle install
 
 ## Basic Usage
 
-The library provides `Kernel#match_all` and  `Kernel#match`.
+The library provides `Egison#match_all` and  `Egison#match`.
 
 ```
 require 'egison'
+
+include Egison
 
 match_all(object) do
   with(pattern) do
@@ -188,6 +190,8 @@ Isn't it exciting?
 ```
 require 'egison'
 
+include Egison
+
 def poker_hands cs
   match(cs) do
     with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do
@@ -234,6 +238,8 @@ I believe it is also a really exciting demonstration.
 ```
 require 'egison'
 require 'prime'
+
+include Egison
 
 twin_primes = match_stream(Prime) {
   with(List.(*_, _x, __("x + 2"), *_)) {

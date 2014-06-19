@@ -74,7 +74,7 @@ A literal that contain `_` ahead is a <i>pattern-variable</i>.
 We can refer the result of pattern-matching through them.
 
 ```
-Egison.match_all([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(List.(*_hs, _x, *_ts)) do
     [hs, x, ts]
   end
@@ -93,19 +93,19 @@ Note that `__` and `___` are also interpreted as a wildcard.
 This is because `_` and `__` are system variables and sometimes have its own meaning.
 
 ```
-Egison.match_all([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(List.(_a, _b, *_)) do
     [a, b]
   end
 end  #=> [[1, 2]]
 
-Egison.match_all([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(Multiset.(_a, _b, *_)) do
     [a, b]
   end
 end  #=> [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]]
 
-Egison.match_all([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(Set.(_a, _b, *_)) do
     [a, b]
   end
@@ -115,7 +115,7 @@ end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 Note that `_[]` is provided as syntactic sugar for `List.()`.
 
 ```
-Egison.match_all([1, 2, 3]) do
+match_all([1, 2, 3]) do
   with(_[_a, _b, *_]) do
     [a, b]
   end
@@ -131,7 +131,7 @@ In the place of `...`, we can write any ruby expression we like.
 It matches the target when the target is equal with the value that `...` evaluated to.
 
 ```
-Egison.match_all([5, 3, 4, 1, 2]) do
+match_all([5, 3, 4, 1, 2]) do
   with(Multiset.(_a, __("a + 1"), __("a + 2"), *_)) do
     a
   end
@@ -141,7 +141,7 @@ end  #=> [1,2,3]
 When, the expression in the place of `...` is a single variable, we can omit `("` and `")` as follow.
 
 ```
-Egison.match_all([1, 2, 3, 2, 5]) do
+match_all([1, 2, 3, 2, 5]) do
   with(Multiset.(_a, __a, *_)) do
     a
   end
@@ -157,10 +157,10 @@ def nats
   (1..Float::INFINITY)
 end
 
-Egison.match_stream(nats){ with(Multiset.(_m, _n, *_)) { [m, n] } }.take(10)
+match_stream(nats){ with(Multiset.(_m, _n, *_)) { [m, n] } }.take(10)
 #=>[[1, 2], [1, 3], [2, 1], [1, 4], [2, 3], [3, 1], [1, 5], [2, 4], [3, 2], [4, 1]]
 
-Egison.match_stream(nats){ with(Set.(_m, _n, *_)) { [m, n] } }.take(10)
+match_stream(nats){ with(Set.(_m, _n, *_)) { [m, n] } }.take(10)
 #=>[[1, 1], [1, 2], [2, 1], [1, 3], [2, 2], [3, 1], [1, 4], [2, 3], [3, 2], [4, 1]]
 ```
 

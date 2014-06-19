@@ -1,5 +1,7 @@
 require 'egison'
 
+include Egison
+
 def poker_hands cs
   match(cs) do
     with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do

@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'egison'
 
+include Egison
+
 describe "sample" do
   describe "combination.rb" do
     it %q{match_all([1,2,3,4,5]) do with(List.(*_, _x, *_, _y, *_)) { [x, y] } end} do

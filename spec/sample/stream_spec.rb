@@ -2,6 +2,8 @@ require 'spec_helper'
 require 'egison'
 require 'prime'
 
+include Egison
+
 def twin_primes
   match_stream(Prime) {
     with(List.(*_, _x, __("x + 2"), *_)) {

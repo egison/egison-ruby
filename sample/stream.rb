@@ -1,6 +1,8 @@
 require 'egison'
 require 'prime'
 
+include Egison
+
 p(match_stream(1..5){ with(List.(*_, _x, *_, _y, *_)) { [x, y] } }.to_a)
 
 twin_primes = match_stream(Prime) {

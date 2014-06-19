@@ -1,6 +1,8 @@
 require 'spec_helper'
 require 'egison'
 
+include Egison
+
 describe "sample" do
   describe "join.rb" do
     it %q{match_all([1,2,3,4,5]) do with(List.(*_hs, *_ts)) { [hs, ts] } end} do

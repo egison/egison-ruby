@@ -27,10 +27,12 @@ $ bundle install
 
 ## Basic Usage
 
-The library provides `Kernel#match_all` and  `Kernel#match`.
+The library provides `Egison#match_all` and  `Egison#match`.
 
 ```
 require 'egison'
+
+include Egison
 
 match_all(object) do
   with(pattern) do
@@ -171,6 +173,8 @@ We can enumerates all combinations of the elements of a collection with pattern-
 ```
 require 'egison'
 
+include Egison
+
 p(match_all([1,2,3,4,5]) do with(List.(*_, _x, *_, _y, *_)) { [x, y] } end)
 #=> [[1, 2], [1, 3], [1, 4], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [3, 5], [4, 5]]
 
@@ -187,6 +191,8 @@ Isn't it exciting?
 
 ```
 require 'egison'
+
+include Egison
 
 def poker_hands cs
   match(cs) do
@@ -234,6 +240,8 @@ I believe it is also a really exciting demonstration.
 ```
 require 'egison'
 require 'prime'
+
+include Egison
 
 twin_primes = match_stream(Prime) {
   with(List.(*_, _x, __("x + 2"), *_)) {

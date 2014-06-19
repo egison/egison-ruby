@@ -444,8 +444,8 @@ module PatternMatch
   end
 end
 
-module Kernel
-  private
+module Egison
+  extend self
 
   def match_all(tgt, &block)
     env = PatternMatch.const_get(:Env).new(self, tgt)

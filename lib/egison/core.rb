@@ -410,11 +410,11 @@ module PatternMatch
       ctx = @ctx
       tgt = @tgt
       mstack = MatchingStateStream.new(pat,tgt)
-      ::Enumerator.new do |y|
+      ::Egison::LazyArray.new(::Enumerator.new{|y|
         mstack.match do |bindings|
           y << with_bindings(ctx, bindings, &block)
         end
-      end
+      })
     rescue PatternNotMatch
     end
   end

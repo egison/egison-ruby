@@ -57,8 +57,8 @@ class << Multiset
       x = val2.shift
       ys = val2.clone
       unjoin_stream(ys) do |xs2, ys2|
-        block.([[x] + xs2, ys2])
         block.([xs2, [x] + ys2]) unless xs2.empty?
+        block.([[x] + xs2, ys2])
       end
     end
   end
@@ -115,8 +115,8 @@ class << Set
       x = val2.shift
       ys2 = val2.clone
       unjoin_stream(ys2) do |xs2, _|
-        block.([[x] + xs2, ys])
         block.([xs2, ys]) unless xs2.empty?
+        block.([[x] + xs2, ys])
       end
     end
   end

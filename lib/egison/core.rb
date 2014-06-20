@@ -50,33 +50,26 @@ module PatternMatch
 
   class MatchingStateStream
     def initialize(pat, tgt)
-      @states = [MatchingState.new(pat, tgt)]
+      @state = MatchingState.new(pat, tgt)
       @processes = []
     end
 
     def match(&block)
-      state = @states.shift
-      @processes << Egison::LazyArray.new(state.process_stream)
-      until @states.empty? && @processes.empty?
-        unless @processes.empty?
-          process(@processes.shift, &block)
-        end
-        unless @states.empty?
-          state = @states.shift
-          process(Egison::LazyArray.new(state.process_stream), &block)
-        end
+      @processes << Egison::LazyArray.new(@state.process_stream)
+      until @processes.empty?
+        process(@processes.shift, &block)
       end
     end
 
     def process(process_iter, &block)
       unless process_iter.empty?
-        @processes << process_iter
         ret = process_iter.shift
         if ret.atoms.empty?
           block.(ret.bindings)
         else
-          @states << ret
+          @processes << Egison::LazyArray.new(ret.process_stream)
         end
+        @processes << process_iter
       end
     end
   end
@@ -417,11 +410,11 @@ module PatternMatch
       ctx = @ctx
       tgt = @tgt
       mstack = MatchingStateStream.new(pat,tgt)
-      ::Enumerator.new do |y|
+      ::Egison::LazyArray.new(::Enumerator.new{|y|
         mstack.match do |bindings|
           y << with_bindings(ctx, bindings, &block)
         end
-      end
+      })
     rescue PatternNotMatch
     end
   end

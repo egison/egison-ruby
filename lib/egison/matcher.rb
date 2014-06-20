@@ -52,16 +52,14 @@ class << Multiset
     val2 = val.clone
     xs = []
     ys = val2.clone
-    if val2.empty?
-      block.([xs, ys])
-    else
+    block.([xs, ys])
+    unless val2.empty?
       x = val2.shift
       ys = val2.clone
-      rets_stream = Egison::LazyArray.new(to_enum(:unjoin_stream, ys))
-      # rets_stream.each{|xs2, ys2| block.([xs2, [x] + ys2])}
-      rets_stream.each{|xs2, ys2| block.([xs2, ys2.clone.unshift(x)])}
-      # rets_stream.each{|xs2, ys2| block.([[x] + xs2, ys2])}
-      rets_stream.each{|xs2, ys2| block.([xs2.clone.unshift(x), ys2])}
+      unjoin_stream(ys) do |xs2, ys2|
+        block.([xs2, [x] + ys2]) unless xs2.empty?
+        block.([[x] + xs2, ys2])
+      end
     end
   end
 end
@@ -112,14 +110,14 @@ class << Set
     val2 = val.clone
     xs = []
     ys = val2.clone
-    if val2.empty?
-      block.([xs, ys])
-    else
+    block.([xs, ys])
+    unless val2.empty?
       x = val2.shift
       ys2 = val2.clone
-      rets_stream = Egison::LazyArray.new(to_enum(:unjoin_stream, ys2))
-      rets_stream.each{|xs2, _| block.([xs2, ys])}
-      rets_stream.each{|xs2, _| block.([xs2.clone.unshift(x), ys])}
+      unjoin_stream(ys2) do |xs2, _|
+        block.([xs2, ys]) unless xs2.empty?
+        block.([[x] + xs2, ys])
+      end
     end
   end
 end

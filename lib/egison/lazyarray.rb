@@ -150,7 +150,7 @@ module Egison
     end
 
     def inspect
-      "\#<#{self.class.name}#{@terminated ? @cache.inspect : "[#{@cache.join(', ')}...]"}>"
+      "\#<#{self.class.name}#{@terminated ? @cache.inspect : "[#{@cache.map(&:inspect).join(', ')}...]"}>"
     end
   end
 end

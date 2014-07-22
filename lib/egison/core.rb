@@ -325,7 +325,7 @@ module PatternMatch
         uscore = Wildcard.new()
         class << uscore
           def [](*args)
-            List.call(*args)
+            Egison::List.call(*args)
           end
         end
         uscore

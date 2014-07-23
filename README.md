@@ -253,6 +253,39 @@ p twin_primes.take(10)
 #=>[[3, 5], [5, 7], [11, 13], [17, 19], [29, 31], [41, 43], [59, 61], [71, 73], [101, 103], [107, 109]]
 ```
 
+### Algebraic Data Types
+
+We can also patten match against algebraic data types as ordinary functional programming language.
+Here is a simple example.
+Note that, the object in the pattern matches if the target object is equal with it.
+
+```
+class User < Struct.new(:name, :gender, :married, :doctor, :professor)
+  def greet
+    match(self) do
+      with(_[_name,       _,    _,    _, true]) { "Hello, Prof. #{name}!" }
+      with(_[_name,       _,    _, true,    _]) { "Hello, Dr. #{name}!" }
+      with(_[_name,   :male,    _,    _,    _]) { "Hello, Mr. #{name}!" }
+      with(_[_name, :female, true,    _,    _]) { "Hello, Mrs. #{name}!" }
+      with(_[_name, :female,    _,    _,    _]) { "Hello, Ms. #{name}!" }
+      with(_[_name,       _,    _,    _,    _]) { "Hello, #{name}!" }
+    end
+  end
+end
+
+u1 = User.new("Egi", :male, true, false, false)
+p(u1.greet)#=>"Hello, Mr. Egi!"
+
+u2 = User.new("Nanaka", :girl, false, false, false)
+p(u2.greet)#=>"Hello, Nanaka!"
+
+u3 = User.new("Hirai", :male, true, true, false)
+p(u3.greet)#=>"Hello, Dr. Hirai!"
+
+u4 = User.new("Hagiya", :male, true, true, true)
+p(u4.greet)#=>"Hello, Prof. Hagiya!"
+```
+
 You can find more demonstrations in the [`sample`](https://github.com/egison/egison-ruby/tree/master/sample) directory.
 
 ## About Egison

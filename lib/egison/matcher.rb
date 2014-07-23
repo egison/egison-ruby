@@ -11,7 +11,6 @@ module Egison
 
   class << Multiset
     def uncons(val)
-      accept_array_only(val)
       match_all(val) do
         with(List.(*_hs, _x, *_ts)) do
           [x, hs + ts]
@@ -32,7 +31,6 @@ module Egison
     end
 
     def unjoin(val)
-      accept_array_only(val)
       val2 = val.clone
       xs = []
       ys = val2.clone
@@ -69,7 +67,6 @@ module Egison
 
   class << Set
     def uncons(val)
-      accept_array_only(val)
       match_all(val) do
         with(List.(*_, _x, *_)) do
           [x, val]
@@ -90,7 +87,6 @@ module Egison
     end
 
     def unjoin(val)
-      accept_array_only(val)
       val2 = val.clone
       xs = []
       ys = val2.clone

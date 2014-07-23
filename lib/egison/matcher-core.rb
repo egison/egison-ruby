@@ -14,10 +14,6 @@ class Class
 
   private
 
-  def accept_array_only(val)
-    raise PatternMatch::PatternNotMatch unless val.kind_of?(Array)
-  end
-
   def test_conv_lazy_array(val)
     raise PatternMatch::PatternNotMatch unless val.respond_to?(:each)
     Egison::LazyArray.new(val)
@@ -26,13 +22,12 @@ end
 
 module Egison
   extend self
-  
+
   class List
   end
 
   class << List
     def uncons(val)
-      accept_array_only(val)
       val2 = val.clone
       x = val2.shift
       [[x, val2]]
@@ -48,7 +43,6 @@ module Egison
     end
 
     def unjoin(val)
-      accept_array_only(val)
       val2 = val.clone
       xs = []
       ys = val2.clone

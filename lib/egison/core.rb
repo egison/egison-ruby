@@ -1,5 +1,4 @@
 require 'egison/version'
-# require 'continuation'
 require 'egison/lazyarray'
 
 module PatternMatch
@@ -140,6 +139,7 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
+      tgt = tgt.to_a
       if subpatterns.empty?
         if tgt.empty?
           return [[[], []]]

@@ -4,7 +4,7 @@ include Egison
 
 def fib (n)
   match(n) do
-    with(__0) { 1 }
+    with(__0) { 0 }
     with(__1) { 1 }
     with(__) { fib(n - 1) + fib(n - 2) }
   end

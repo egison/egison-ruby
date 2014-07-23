@@ -149,22 +149,33 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.quantified
-          if subpatterns.empty?
-            [[[[px.pattern, tgt]], []]]
+        if px.kind_of?(Pattern)
+          if px.quantified
+            if subpatterns.empty?
+              [[[[px.pattern, tgt]], []]]
+            else
+              unjoineds = @matcher.unjoin(tgt)
+              unjoineds.map do |xs, ys|
+                [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []]
+              end
+            end
           else
-            unjoineds = @matcher.unjoin(tgt)
-            unjoineds.map do |xs, ys|
-              [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []]
+            if tgt.empty?
+              []
+            else
+              unconseds = @matcher.uncons(tgt)
+              unconseds.map do |x, xs|
+                [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
+              end
             end
           end
         else
           if tgt.empty?
             []
           else
-            unconseds = @matcher.uncons(tgt)
+            unconseds = @matcher.uncons(tgt).select { |x, xs| px == x }
             unconseds.map do |x, xs|
-              [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
+              [[[PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
             end
           end
         end
@@ -311,7 +322,7 @@ module PatternMatch
     def method_missing(name, *args)
       ::Kernel.raise ::ArgumentError, "wrong number of arguments (#{args.length} for 0)" unless args.empty?
       if /^__/.match(name.to_s)
-        ValuePattern.new(@ctx, name.to_s.gsub(/^__/, "").gsub("_plus_", "+").gsub("_minus_", "-"))
+        ValuePattern.new(@ctx, name.to_s.gsub(/^__/, ""))
       elsif /^_/.match(name.to_s)
         PatternVariable.new(name.to_s.gsub(/^_/, "").to_sym)
       else
@@ -393,13 +404,22 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      mstack = MatchingStateStack.new(pat,tgt)
-      mstack.match
-      if mstack.results.empty?
-        nil
+      if pat.kind_of?(Pattern)
+        mstack = MatchingStateStack.new(pat,tgt)
+        mstack.match
+        if mstack.results.empty?
+          nil
+        else
+          ret = with_bindings(ctx, mstack.results.first, &block)
+          ::Kernel.throw(:exit_match, ret)
+        end
       else
-        ret = with_bindings(ctx, mstack.results.first, &block)
-        ::Kernel.throw(:exit_match, ret)
+        if pat == tgt
+          ret = with_bindings(ctx, [], &block)
+          ::Kernel.throw(:exit_match, ret)
+        else
+          nil
+        end
       end
     rescue PatternNotMatch
     end

@@ -4,6 +4,9 @@ include Egison
 
 def poker_hands cs
   match(cs) do
+    with(Multiset.(_[_s, 10], _[__s, 11], _[__s, 12], _[__s, 13], _[__s, 1])) do
+      "Royal Straight flush"
+    end
     with(Multiset.(_[_s, _n], _[__s, __("n+1")], _[__s, __("n+2")], _[__s, __("n+3")], _[__s, __("n+4")])) do
       "Straight flush"
     end
@@ -34,6 +37,7 @@ def poker_hands cs
   end
 end
 
+p(poker_hands([["diamond", 1], ["diamond", 10], ["diamond", 13], ["diamond", 12], ["diamond", 11]])) #=> "Straight flush"
 p(poker_hands([["diamond", 1], ["diamond", 3], ["diamond", 5], ["diamond", 4], ["diamond", 2]])) #=> "Straight flush"
 p(poker_hands([["diamond", 1], ["club", 2], ["club", 1], ["heart", 1], ["diamond", 2]])) #=> "Full house"
 p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Straight"

@@ -9,7 +9,7 @@ class User < Struct.new(:name, :gender, :married, :doctor, :professor)
       with(_[_name,             _,      _, __true,      _]) { "Hello, Dr. #{name}!" }
       with(_[_name,   __(":male"),      _,      _,      _]) { "Hello, Mr. #{name}!" }
       with(_[_name, __(":female"), __true,      _,      _]) { "Hello, Mrs. #{name}!" }
-      with(_[_name, __(":female"),      _,      _,      _]) { "Hello, Ms. #{name}!" }x
+      with(_[_name, __(":female"),      _,      _,      _]) { "Hello, Ms. #{name}!" }
       with(_[_name,             _,      _,      _,      _]) { "Hello, #{name}!" }
     end
   end

@@ -190,18 +190,28 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.quantified
-          if subpatterns.empty?
-            block.([[[px.pattern, tgt]], []])
+        if px.kind_of?(Pattern)
+          if px.quantified
+            if subpatterns.empty?
+              block.([[[px.pattern, tgt]], []])
+            else
+              @matcher.unjoin_stream(tgt) do |xs, ys|
+                block.([[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], [])
+              end
+            end
           else
-            @matcher.unjoin_stream(tgt) do |xs, ys|
-              block.([[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], [])
+            unless tgt.empty?
+              @matcher.uncons_stream(tgt) do |x, xs|
+                block.([[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], [])
+              end
             end
           end
         else
           unless tgt.empty?
             @matcher.uncons_stream(tgt) do |x, xs|
-              block.([[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], [])
+              if px == x
+                block.([[PatternWithMatcher.new(@matcher, *subpatterns), xs]], [])
+              end
             end
           end
         end

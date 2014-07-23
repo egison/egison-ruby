@@ -257,7 +257,7 @@ You can find more demonstrations in the [`sample`](https://github.com/egison/egi
 
 ## About Egison
 
-If you get to love the above pattern-matching, please try [the Egison programming language](http://www.egison.org), too.
+If you get to love the above pattern-matching, please try [the Egison programming language](https://github.com/egison/egison), too.
 Egison is the pattern-matching oriented, purely functional programming language.
 Actually, the original pattern-matching system of Egison is more powerful.
 For example, we can do following things in the original Egison.

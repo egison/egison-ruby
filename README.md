@@ -315,14 +315,14 @@ There is a new programming world!
 
 ## Contact
 
-If you get interested in this Gem, please contact [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@Egison_Lang](https://twitter.com/Egison_Lang).
+If you get interested in this Gem, please contact <a target="_blank" href="http://www.egison.org/~egi/">Satoshi Egi</a> or tweet to <a target="_blank" href="https://twitter.com/Egison_Lang">@Egison_Lang</a>.
 
-We will talk about this gem in [RubyKaigi 2014](http://rubykaigi.org/2014)!
+We will talk about this gem in <a target="_blank" href="http://rubykaigi.org/2014">RubyKaigi 2014</a>!
 
 ## LICENSE
 
 The license of this library code is BSD.
-I learned how to extend Ruby and how to write a gem from the code of [the pattern-match gem](https://github.com/k-tsj/pattern-match) by Kazuki Tsujimoto.
+I learned how to extend Ruby and how to write a gem from the code of  <a target="_blank" href="https://github.com/k-tsj/pattern-match">the pattern-match gem</a> by Kazuki Tsujimoto.
 I designed syntax of pattern-matching to go with that gem.
 This library contains the copy from that gem.
 The full license text is [here](https://github.com/egisatoshi/egison-ruby/blob/master/LICENSE).

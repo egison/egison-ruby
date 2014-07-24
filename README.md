@@ -268,7 +268,7 @@ p prime_triplets.take(10)
 
 ### Algebraic Data Types
 
-We can also patten match against algebraic data types as ordinary functional programming languages.
+Of course, we can also patten match against algebraic data types as ordinary functional programming languages.
 Here is a simple example.
 Note that, the object in the pattern matches if the target object is equal with it.
 

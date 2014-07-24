@@ -232,7 +232,7 @@ p(poker_hands([["diamond", 4], ["club", 2], ["club", 5], ["heart", 1], ["diamond
 p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamond", 3]])) #=> "Nothing"
 ```
 
-### Twin Primes
+### Twin Primes and Prime Triplets
 
 The following code enumerates all twin primes with pattern-matching!
 I believe it is also a really exciting demonstration.
@@ -244,13 +244,26 @@ require 'prime'
 include Egison
 
 twin_primes = match_stream(Prime) {
-  with(List.(*_, _x, __("x + 2"), *_)) {
-    [x, x + 2]
+  with(List.(*_, _p, __("p + 2"), *_)) {
+    [p, p + 2]
   }
 }
 
 p twin_primes.take(10)
 #=>[[3, 5], [5, 7], [11, 13], [17, 19], [29, 31], [41, 43], [59, 61], [71, 73], [101, 103], [107, 109]]
+```
+
+We can enumerate prime triplets using and-patterns and or-patterns effectively.
+
+```
+prime_triplets = match_stream(Prime) {
+  with(List.(*_, _p, And(Or(__("p + 2"), __("p + 4")), _m), __("p + 6"), *_)) {
+    [p, m, p + 6]
+  }
+}
+
+p prime_triplets.take(10)
+#=>[[5, 7, 11], [7, 11, 13], [11, 13, 17], [13, 17, 19], [17, 19, 23], [37, 41, 43], [41, 43, 47], [67, 71, 73], [97, 101, 103], [101, 103, 107]]
 ```
 
 ### Algebraic Data Types

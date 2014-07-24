@@ -253,7 +253,7 @@ p twin_primes.take(10)
 #=>[[3, 5], [5, 7], [11, 13], [17, 19], [29, 31], [41, 43], [59, 61], [71, 73], [101, 103], [107, 109]]
 ```
 
-We can enumerate prime triplets using and-patterns and or-patterns effectively.
+We can enumerate prime triplets using **and-patterns** and **or-patterns** effectively.
 
 ```
 prime_triplets = match_stream(Prime) {

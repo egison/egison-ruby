@@ -255,7 +255,7 @@ p twin_primes.take(10)
 
 We can enumerate prime triplets using **and-patterns** and **or-patterns** effectively.
 
-```
+```Ruby
 prime_triplets = match_stream(Prime) {
   with(List.(*_, _p, And(Or(__("p + 2"), __("p + 4")), _m), __("p + 6"), *_)) {
     [p, m, p + 6]

@@ -219,6 +219,32 @@ module PatternMatch
     end
   end
 
+  class OrPattern < PatternElement
+    attr_reader :pats
+
+    def initialize(*subpatterns)
+      super()
+      @pats = subpatterns
+    end
+
+    def match(tgt, bindings)
+      @pats.map { |pat| [[[pat, tgt]], []] }
+    end
+  end
+  
+  class AndPattern < PatternElement
+    attr_reader :pats
+
+    def initialize(*subpatterns)
+      super()
+      @pats = subpatterns
+    end
+
+    def match(tgt, bindings)
+      [[@pats.map { |pat| [pat, tgt] }, []]]
+    end
+  end
+  
   class Wildcard < PatternElement
     def initialize()
       super()
@@ -373,6 +399,14 @@ module PatternMatch
       else
         undefined
       end
+    end
+
+    def Or(*subpatterns)
+      OrPattern.new(*subpatterns)
+    end
+
+    def And(*subpatterns)
+      AndPattern.new(*subpatterns)
     end
 
     class BindingModule < ::Module

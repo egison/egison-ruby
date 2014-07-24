@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.version     = Egison::VERSION
   s.authors     = ['Satoshi Egi']
   s.email       = ['egi@egison.org']
-  s.homepage    = 'https://github.com/egisatoshi/egison-ruby'
+  s.homepage    = 'https://github.com/egison/egison-ruby'
   s.summary     = %q{The Egison pattern matching library}
   s.description = %w{
     The library to access Egison pattern-matching from Ruby.

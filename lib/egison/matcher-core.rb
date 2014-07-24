@@ -23,6 +23,28 @@ end
 module Egison
   extend self
 
+  class << Struct
+    def uncons(val)
+      val2 = val.clone
+      x = val2.shift
+      [[x, val2]]
+    end
+
+    def unjoin(val)
+      val2 = val.clone
+      xs = []
+      ys = val2.clone
+      rets = [[xs, ys]]
+      until val2.empty? do
+        x = val2.shift
+        ys = val2.clone
+        xs += [x]
+        rets += [[xs, ys]]
+      end
+      rets
+    end
+  end
+
   class List
   end
 

@@ -63,7 +63,7 @@ If a pattern matches, it calls the block passed to the matched match-clause and 
 
 ## Patterns
 
-### Element patterns and subcollection patterns
+### Element Patterns and Subcollection Patterns
 
 An <i>element pattern</i> matches the element of the target array.
 
@@ -81,7 +81,7 @@ match_all([1, 2, 3]) do
 end  #=> [[[],1,[2,3]],[[1],2,[3]],[[1,2],3,[]]
 ```
 
-### Three matchers: List, Multiset, Set
+### Three Matchers: List, Multiset, Set
 
 We can write pattern-matching against lists, multisets, and sets.
 When we regard an array as a multiset, the order of elements is ignored.
@@ -122,7 +122,7 @@ match_all([1, 2, 3]) do
 end  #=> [[1, 2]]
 ```
 
-### Non-linear patterns
+### Non-Linear Patterns
 
 Non-linear pattern is the most important feature of our pattern-matching system.
 Our pattern-matching system allows users multiple occurrences of same variables in a pattern.
@@ -316,6 +316,8 @@ There is a new programming world!
 ## Contact
 
 If you get interested in this Gem, please contact [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@Egison_Lang](https://twitter.com/Egison_Lang).
+
+We will talk about this gem in [RubyKaigi 2014](http://rubykaigi.org/2014)!
 
 ## LICENSE
 

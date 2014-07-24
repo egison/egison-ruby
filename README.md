@@ -265,9 +265,9 @@ class User < Struct.new(:name, :gender, :married, :doctor, :professor)
     match(self) do
       with(_[_name,       _,    _,    _, true]) { "Hello, Prof. #{name}!" }
       with(_[_name,       _,    _, true,    _]) { "Hello, Dr. #{name}!" }
-      with(_[_name,   :male,    _,    _,    _]) { "Hello, Mr. #{name}!" }
       with(_[_name, :female, true,    _,    _]) { "Hello, Mrs. #{name}!" }
       with(_[_name, :female,    _,    _,    _]) { "Hello, Ms. #{name}!" }
+      with(_[_name,   :male,    _,    _,    _]) { "Hello, Mr. #{name}!" }
       with(_[_name,       _,    _,    _,    _]) { "Hello, #{name}!" }
     end
   end

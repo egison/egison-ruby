@@ -141,10 +141,9 @@ module PatternMatch
     def match(tgt, bindings)
       tgt = tgt.to_a
       if subpatterns.empty?
-        if tgt.empty?
-          return [[[], []]]
-        else
-          return []
+        unnileds = @matcher.unnil(tgt)
+        unnileds.map do
+          [[], []]
         end
       else
         subpatterns = @subpatterns.clone

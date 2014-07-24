@@ -6,11 +6,11 @@ class User < Struct.new(:name, :gender, :married, :doctor, :professor)
   def greet
     match(self) do
       with(User.(_name,       _,    _,    _, true)) { "Hello, Prof. #{name}!" }
-      with(User.(_name,       _,    _, true,    _)) { "Hello, Dr. #{name}!" }
-      with(User.(_name, :female, true,    _,    _)) { "Hello, Mrs. #{name}!" }
-      with(User.(_name, :female,    _,    _,    _)) { "Hello, Ms. #{name}!" }
-      with(User.(_name,   :male,    _,    _,    _)) { "Hello, Mr. #{name}!" }
-      with(User.(_name,       _,    _,    _,    _)) { "Hello, #{name}!" }
+      with(User.(_name,       _,    _, true))       { "Hello, Dr. #{name}!" }
+      with(User.(_name, :female, true))             { "Hello, Mrs. #{name}!" }
+      with(User.(_name, :female))                   { "Hello, Ms. #{name}!" }
+      with(User.(_name,   :male))                   { "Hello, Mr. #{name}!" }
+      with(User.(_name))                            { "Hello, #{name}!" }
     end
   end
 end

@@ -4,6 +4,14 @@ require 'egison/lazyarray'
 class Class
   include PatternMatch::Matchable
 
+  def unnil(val)
+    if val.empty?
+      [[]]
+    else
+      []
+    end
+  end
+
   def uncons(val)
     raise NotImplementedError, "need to define `#{__method__}'"
   end
@@ -24,6 +32,10 @@ module Egison
   extend self
 
   class << Struct
+    def unnil(val)
+      [[]]
+    end
+    
     def uncons(val)
       val2 = val.clone
       x = val2.shift

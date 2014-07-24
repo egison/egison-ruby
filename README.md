@@ -5,13 +5,13 @@ We can directly express pattern-matching against lists, multisets, and sets usin
 
 ## Installation
 
-```
+```shell
 $ gem install egison
 ```
 
 or
 
-```
+```shell
 $ git clone https://github.com/egison/egison-ruby.git
 $ cd egison-ruby
 $ make
@@ -19,7 +19,7 @@ $ make
 
 or
 
-```
+```shell
 $ gem install bundler (if you need)
 $ echo "gem 'egison', :git => 'https://github.com/egison/egison-ruby.git'" > Gemfile
 $ bundle install
@@ -29,7 +29,7 @@ $ bundle install
 
 The library provides `Egison#match_all` and  `Egison#match`.
 
-```
+```Ruby
 require 'egison'
 
 include Egison
@@ -73,7 +73,7 @@ A subcollection pattern has `*` ahead.
 A literal that contain `_` ahead is a <i>pattern-variable</i>.
 We can refer the result of pattern-matching through them.
 
-```
+```Ruby
 match_all([1, 2, 3]) do
   with(List.(*_hs, _x, *_ts)) do
     [hs, x, ts]
@@ -92,7 +92,7 @@ It matches with any object.
 Note that `__` and `___` are also interpreted as a wildcard.
 This is because `_` and `__` are system variables and sometimes have its own meaning.
 
-```
+```Ruby
 match_all([1, 2, 3]) do
   with(List.(_a, _b, *_)) do
     [a, b]
@@ -114,7 +114,7 @@ end  #=> [[1, 1],[1, 2],[1, 3],[2, 1],[2, 2],[2, 3],[3, 1],[3, 2],[3, 3]]
 
 Note that `_[]` is provided as syntactic sugar for `List.()`.
 
-```
+```Ruby
 match_all([1, 2, 3]) do
   with(_[_a, _b, *_]) do
     [a, b]
@@ -130,7 +130,7 @@ A Pattern whose form is `__("...")` is a value pattern.
 In the place of `...`, we can write any ruby expression we like.
 It matches the target when the target is equal with the value that `...` evaluated to.
 
-```
+```Ruby
 match_all([5, 3, 4, 1, 2]) do
   with(Multiset.(_a, __("a + 1"), __("a + 2"), *_)) do
     a
@@ -140,7 +140,7 @@ end  #=> [1,2,3]
 
 When, the expression in the place of `...` is a single variable, we can omit `("` and `")` as follow.
 
-```
+```Ruby
 match_all([1, 2, 3, 2, 5]) do
   with(Multiset.(_a, __a, *_)) do
     a
@@ -152,7 +152,7 @@ end  #=> [2,2]
 
 We can do pattern-matching against streams with the `match_stream` expression.
 
-```
+```Ruby
 def nats
   (1..Float::INFINITY)
 end
@@ -170,7 +170,7 @@ match_stream(nats){ with(Set.(_m, _n, *_)) { [m, n] } }.take(10)
 
 We can enumerates all combinations of the elements of a collection with pattern-matching.
 
-```
+```Ruby
 require 'egison'
 
 include Egison
@@ -189,7 +189,7 @@ We can write patterns for all poker-hands in one single pattern.
 It is as follow.
 Isn't it exciting?
 
-```
+```Ruby
 require 'egison'
 
 include Egison
@@ -237,7 +237,7 @@ p(poker_hands([["diamond", 4], ["club", 10], ["club", 5], ["heart", 1], ["diamon
 The following code enumerates all twin primes with pattern-matching!
 I believe it is also a really exciting demonstration.
 
-```
+```Ruby
 require 'egison'
 require 'prime'
 
@@ -259,7 +259,7 @@ We can also patten match against algebraic data types as ordinary functional pro
 Here is a simple example.
 Note that, the object in the pattern matches if the target object is equal with it.
 
-```
+```Ruby
 class User < Struct.new(:name, :gender, :married, :doctor, :professor)
   def greet
     match(self) do

@@ -326,3 +326,7 @@ I learned how to extend Ruby and how to write a gem from the code of  <a target=
 I designed syntax of pattern-matching to go with that gem.
 This library contains the copy from that gem.
 The full license text is [here](https://github.com/egisatoshi/egison-ruby/blob/master/LICENSE).
+
+## Sponsors
+
+This project is sponsored by [Rakuten, Inc.](http://global.rakuten.com/corp/) and [Rakuten Institute of Technology](http://rit.rakuten.co.jp/).

@@ -346,7 +346,7 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      mstack = MatchingStateStack.new(pat,tgt)
+      mstack = MatchingStateStack.new(pat, tgt)
       mstack.match
       mstack.results.map { |bindings|
         ret = with_bindings(ctx, bindings, &block)
@@ -448,7 +448,7 @@ module PatternMatch
       ctx = @ctx
       tgt = @tgt
       if pat.is_a?(Pattern)
-        mstack = MatchingStateStack.new(pat,tgt)
+        mstack = MatchingStateStack.new(pat, tgt)
         mstack.match
         if mstack.results.empty?
           nil
@@ -472,7 +472,7 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      mstack = MatchingStateStream.new(pat,tgt)
+      mstack = MatchingStateStream.new(pat, tgt)
       ::Egison::LazyArray.new(::Enumerator.new{|y|
         mstack.match do |bindings|
           y << with_bindings(ctx, bindings, &block)

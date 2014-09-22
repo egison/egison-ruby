@@ -148,7 +148,7 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.kind_of?(Pattern)
+        if px.is_a?(Pattern)
           if px.quantified
             if subpatterns.empty?
               [[[[px.pattern, tgt]], []]]
@@ -189,7 +189,7 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.kind_of?(Pattern)
+        if px.is_a?(Pattern)
           if px.quantified
             if subpatterns.empty?
               block.([[[px.pattern, tgt]], []])
@@ -310,7 +310,7 @@ module PatternMatch
     end
 
     def binding_module(obj)
-      m = obj.singleton_class.ancestors.find { |i| i.kind_of?(BindingModule) }
+      m = obj.singleton_class.ancestors.find { |i| i.is_a?(BindingModule) }
       unless m
         m = BindingModule.new
         obj.singleton_class.class_eval do
@@ -428,7 +428,7 @@ module PatternMatch
     end
 
     def binding_module(obj)
-      m = obj.singleton_class.ancestors.find { |i| i.kind_of?(BindingModule) }
+      m = obj.singleton_class.ancestors.find { |i| i.is_a?(BindingModule) }
       unless m
         m = BindingModule.new
         obj.singleton_class.class_eval do
@@ -447,7 +447,7 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      if pat.kind_of?(Pattern)
+      if pat.is_a?(Pattern)
         mstack = MatchingStateStack.new(pat,tgt)
         mstack.match
         if mstack.results.empty?
@@ -491,7 +491,7 @@ module PatternMatch
   if respond_to?(:private_constant)
     constants.each do |c|
       klass = const_get(c)
-      next unless klass.kind_of?(Class)
+      next unless klass.is_a?(Class)
       if klass <= Pattern
         private_constant c
       end
@@ -509,7 +509,7 @@ module Egison
   end
 
   def match_stream(tgt, &block)
-    if !(tgt.kind_of?(Array) || tgt.kind_of?(Egison::LazyArray))
+    if !(tgt.is_a?(Array) || tgt.is_a?(Egison::LazyArray))
       tgt = Egison::LazyArray.new(tgt)
     end
     env = PatternMatch.const_get(:EnvE).new(self, tgt)

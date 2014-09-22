@@ -2,7 +2,7 @@ require 'egison'
 
 include Egison
 
-def fib (n)
+def fib(n)
   match(n) do
     with(0) { 0 }
     with(1) { 1 }

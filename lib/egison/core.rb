@@ -26,7 +26,7 @@ module PatternMatch
     end
 
     def match
-      until @states.empty? do
+      until @states.empty?
         process
       end
       @results

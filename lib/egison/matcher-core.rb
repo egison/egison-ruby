@@ -47,7 +47,7 @@ module Egison
       xs = []
       ys = val2.clone
       rets = [[xs, ys]]
-      until val2.empty? do
+      until val2.empty?
         x = val2.shift
         ys = val2.clone
         xs += [x]
@@ -81,7 +81,7 @@ module Egison
       xs = []
       ys = val2.clone
       rets = [[xs, ys]]
-      until val2.empty? do
+      until val2.empty?
         x = val2.shift
         ys = val2.clone
         xs += [x]

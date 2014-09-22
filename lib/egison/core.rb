@@ -230,7 +230,7 @@ module PatternMatch
       @pats.map { |pat| [[[pat, tgt]], []] }
     end
   end
-  
+
   class AndPattern < PatternElement
     attr_reader :pats
 
@@ -243,7 +243,7 @@ module PatternMatch
       [[@pats.map { |pat| [pat, tgt] }, []]]
     end
   end
-  
+
   class Wildcard < PatternElement
     def initialize()
       super()
@@ -275,7 +275,7 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
-      val = with_bindings(@ctx, bindings, {:expr => @expr}) { eval expr }
+      val = with_bindings(@ctx, bindings, expr: @expr) { eval expr }
       if val.__send__(:===, tgt)
         [[[], []]]
       else

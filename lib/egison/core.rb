@@ -509,7 +509,7 @@ module Egison
   end
 
   def match_stream(tgt, &block)
-    if !(tgt.is_a?(Array) || tgt.is_a?(Egison::LazyArray))
+    unless tgt.is_a?(Array) || tgt.is_a?(Egison::LazyArray)
       tgt = Egison::LazyArray.new(tgt)
     end
     env = PatternMatch.const_get(:EnvE).new(self, tgt)

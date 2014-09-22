@@ -19,7 +19,7 @@ module Egison
     end
 
     def uncons_stream(val, &block)
-      if !(val.is_a?(Array) || val.is_a?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       stream = match_stream(val) {
@@ -47,7 +47,7 @@ module Egison
     end
 
     def unjoin_stream(val, &block)
-      if !(val.is_a?(Array) || val.is_a?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone
@@ -75,7 +75,7 @@ module Egison
     end
 
     def uncons_stream(val, &block)
-      if !(val.is_a?(Array) || val.is_a?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       stream = match_stream(val) {
@@ -103,7 +103,7 @@ module Egison
     end
 
     def unjoin_stream(val, &block)
-      if !(val.is_a?(Array) || val.is_a?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone

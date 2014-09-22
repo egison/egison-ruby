@@ -110,7 +110,7 @@ module PatternMatch
     def initialize
     end
 
-    def match(tgt, bindings)
+    def match(_tgt, _bindings)
     end
 
     def match_stream(tgt, bindings, &block)
@@ -138,7 +138,7 @@ module PatternMatch
       @subpatterns = subpatterns
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       tgt = tgt.to_a
       if subpatterns.empty?
         unnileds = @matcher.unnil(tgt)
@@ -181,7 +181,7 @@ module PatternMatch
       end
     end
 
-    def match_stream(tgt, bindings, &block)
+    def match_stream(tgt, _bindings, &block)
       if subpatterns.empty?
         if tgt.empty?
           return block.([[], []])
@@ -226,7 +226,7 @@ module PatternMatch
       @pats = subpatterns
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       @pats.map { |pat| [[[pat, tgt]], []] }
     end
   end
@@ -239,7 +239,7 @@ module PatternMatch
       @pats = subpatterns
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       [[@pats.map { |pat| [pat, tgt] }, []]]
     end
   end
@@ -249,7 +249,7 @@ module PatternMatch
       super()
     end
 
-    def match(tgt, bindings)
+    def match(_tgt, _bindings)
       [[[], []]]
     end
   end
@@ -262,7 +262,7 @@ module PatternMatch
       @name = name
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       [[[], [[name, tgt]]]]
     end
   end

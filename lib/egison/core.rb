@@ -172,8 +172,8 @@ module PatternMatch
           if tgt.empty?
             []
           else
-            unconseds = @matcher.uncons(tgt).select { |x, xs| px == x }
-            unconseds.map do |x, xs|
+            unconseds = @matcher.uncons(tgt).select { |x, _xs| px == x }
+            unconseds.map do |_x, xs|
               [[[PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
             end
           end

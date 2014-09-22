@@ -2,7 +2,7 @@ require 'egison'
 
 include Egison
 
-def poker_hands cs
+def poker_hands(cs)
   match(cs) do
     with(Multiset.(_[_s, 10], _[__s, 11], _[__s, 12], _[__s, 13], _[__s, 1])) do
       "Royal Straight flush"

@@ -42,7 +42,7 @@ module Egison
         obj
       end
 
-      def concat other
+      def concat(other)
         if @terminated && other.is_a?(::Array)
           @cache.concat(other)
         else
@@ -139,13 +139,13 @@ module Egison
     end
     alias :dup :clone
 
-    def concat other
+    def concat(other)
       @org_enum.concat(other)
       @terminated = false
       self
     end
 
-    def + other
+    def +(other)
       clone.concat(other)
     end
 
@@ -157,7 +157,7 @@ end
 
 class ::Array
   alias :org_plus_meth_esc_by_egison_lazyarray :+
-  def + other
+  def +(other)
     if other.is_a?(Egison::LazyArray)
       return other.clone.unshift(*self)
     end

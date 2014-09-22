@@ -368,7 +368,7 @@ module PatternMatch
     def _(*vals)
       case vals.length
       when 0
-        uscore = Wildcard.new()
+        uscore = Wildcard.new
         class << uscore
           def [](*args)
             Egison::List.call(*args)
@@ -383,7 +383,7 @@ module PatternMatch
     def __(*vals)
       case vals.length
       when 0
-        Wildcard.new()
+        Wildcard.new
       when 1
         ValuePattern.new(@ctx, vals[0])
       else
@@ -394,7 +394,7 @@ module PatternMatch
     def ___(*vals)
       case vals.length
       when 0
-        Wildcard.new()
+        Wildcard.new
       else
         undefined
       end

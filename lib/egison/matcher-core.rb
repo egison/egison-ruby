@@ -13,17 +13,17 @@ class Class
   end
 
   def uncons(val)
-    raise NotImplementedError, "need to define `#{__method__}'"
+    fail NotImplementedError, "need to define `#{__method__}'"
   end
 
   def uncons_stream(val, &block)
-    raise NotImplementedError, "need to define `#{__method__}'"
+    fail NotImplementedError, "need to define `#{__method__}'"
   end
 
   private
 
   def test_conv_lazy_array(val)
-    raise PatternMatch::PatternNotMatch unless val.respond_to?(:each)
+    fail PatternMatch::PatternNotMatch unless val.respond_to?(:each)
     Egison::LazyArray.new(val)
   end
 end

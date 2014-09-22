@@ -21,7 +21,7 @@ module Egison
       def next
         index = @index += 1
         return @cache[index] if @cache.size > index
-        raise StopIteration.new('iteration reached an end') if @terminated
+        fail StopIteration.new('iteration reached an end') if @terminated
         el = org_enum_next
         @cache << el
         el

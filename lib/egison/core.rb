@@ -245,7 +245,7 @@ module PatternMatch
   end
 
   class Wildcard < PatternElement
-    def initialize()
+    def initialize
       super()
     end
 

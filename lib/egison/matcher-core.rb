@@ -13,17 +13,17 @@ class Class
   end
 
   def uncons(val)
-    raise NotImplementedError, "need to define `#{__method__}'"
+    fail NotImplementedError, "need to define `#{__method__}'"
   end
 
   def uncons_stream(val, &block)
-    raise NotImplementedError, "need to define `#{__method__}'"
+    fail NotImplementedError, "need to define `#{__method__}'"
   end
 
   private
 
   def test_conv_lazy_array(val)
-    raise PatternMatch::PatternNotMatch unless val.respond_to?(:each)
+    fail PatternMatch::PatternNotMatch unless val.respond_to?(:each)
     Egison::LazyArray.new(val)
   end
 end
@@ -47,7 +47,7 @@ module Egison
       xs = []
       ys = val2.clone
       rets = [[xs, ys]]
-      until val2.empty? do
+      until val2.empty?
         x = val2.shift
         ys = val2.clone
         xs += [x]
@@ -68,7 +68,7 @@ module Egison
     end
 
     def uncons_stream(val, &block)
-      if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone
@@ -81,7 +81,7 @@ module Egison
       xs = []
       ys = val2.clone
       rets = [[xs, ys]]
-      until val2.empty? do
+      until val2.empty?
         x = val2.shift
         ys = val2.clone
         xs += [x]
@@ -91,7 +91,7 @@ module Egison
     end
 
     def unjoin_stream(val, &block)
-      if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone

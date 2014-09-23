@@ -5,7 +5,7 @@ module Egison
     class OrgEnum
       def initialize(org_enum)
         @src_enums = []
-        if org_enum.kind_of?(::Array)
+        if org_enum.is_a?(::Array)
           @org_enum = [].to_enum  # DUMMY
           @cache = org_enum
           @index = -1
@@ -21,7 +21,7 @@ module Egison
       def next
         index = @index += 1
         return @cache[index] if @cache.size > index
-        raise StopIteration.new('iteration reached an end') if @terminated
+        fail StopIteration.new('iteration reached an end') if @terminated
         el = org_enum_next
         @cache << el
         el
@@ -42,8 +42,8 @@ module Egison
         obj
       end
 
-      def concat other
-        if @terminated && other.kind_of?(::Array)
+      def concat(other)
+        if @terminated && other.is_a?(::Array)
           @cache.concat(other)
         else
           @src_enums.push(other)
@@ -139,13 +139,13 @@ module Egison
     end
     alias :dup :clone
 
-    def concat other
+    def concat(other)
       @org_enum.concat(other)
       @terminated = false
       self
     end
 
-    def + other
+    def +(other)
       clone.concat(other)
     end
 
@@ -157,8 +157,8 @@ end
 
 class ::Array
   alias :org_plus_meth_esc_by_egison_lazyarray :+
-  def + other
-    if other.kind_of?(Egison::LazyArray)
+  def +(other)
+    if other.is_a?(Egison::LazyArray)
       return other.clone.unshift(*self)
     end
     org_plus_meth_esc_by_egison_lazyarray(other)

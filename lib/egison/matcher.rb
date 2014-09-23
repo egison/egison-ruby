@@ -19,7 +19,7 @@ module Egison
     end
 
     def uncons_stream(val, &block)
-      if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       stream = match_stream(val) {
@@ -47,7 +47,7 @@ module Egison
     end
 
     def unjoin_stream(val, &block)
-      if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone
@@ -75,7 +75,7 @@ module Egison
     end
 
     def uncons_stream(val, &block)
-      if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       stream = match_stream(val) {
@@ -97,13 +97,13 @@ module Egison
         x = val2.shift
         ys2 = val2.clone
         rets2 = unjoin(ys2)
-        rets = (rets2.map { |xs2, _| [xs2, ys] }) + (rets2.map { |xs2, ys2| [[x] + xs2, ys] })
+        rets = (rets2.map { |xs2, _| [xs2, ys] }) + (rets2.map { |xs2, _ys2| [[x] + xs2, ys] })
         rets
       end
     end
 
     def unjoin_stream(val, &block)
-      if !(val.kind_of?(Array) || val.kind_of?(Egison::LazyArray))
+      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone

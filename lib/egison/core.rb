@@ -26,7 +26,7 @@ module PatternMatch
     end
 
     def match
-      until @states.empty? do
+      until @states.empty?
         process
       end
       @results
@@ -110,7 +110,7 @@ module PatternMatch
     def initialize
     end
 
-    def match(tgt, bindings)
+    def match(_tgt, _bindings)
     end
 
     def match_stream(tgt, bindings, &block)
@@ -138,7 +138,7 @@ module PatternMatch
       @subpatterns = subpatterns
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       tgt = tgt.to_a
       if subpatterns.empty?
         unnileds = @matcher.unnil(tgt)
@@ -148,7 +148,7 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.kind_of?(Pattern)
+        if px.is_a?(Pattern)
           if px.quantified
             if subpatterns.empty?
               [[[[px.pattern, tgt]], []]]
@@ -172,8 +172,8 @@ module PatternMatch
           if tgt.empty?
             []
           else
-            unconseds = @matcher.uncons(tgt).select { |x, xs| px == x }
-            unconseds.map do |x, xs|
+            unconseds = @matcher.uncons(tgt).select { |x, _xs| px == x }
+            unconseds.map do |_x, xs|
               [[[PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
             end
           end
@@ -181,7 +181,7 @@ module PatternMatch
       end
     end
 
-    def match_stream(tgt, bindings, &block)
+    def match_stream(tgt, _bindings, &block)
       if subpatterns.empty?
         if tgt.empty?
           return block.([[], []])
@@ -189,7 +189,7 @@ module PatternMatch
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
-        if px.kind_of?(Pattern)
+        if px.is_a?(Pattern)
           if px.quantified
             if subpatterns.empty?
               block.([[[px.pattern, tgt]], []])
@@ -226,11 +226,11 @@ module PatternMatch
       @pats = subpatterns
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       @pats.map { |pat| [[[pat, tgt]], []] }
     end
   end
-  
+
   class AndPattern < PatternElement
     attr_reader :pats
 
@@ -239,17 +239,17 @@ module PatternMatch
       @pats = subpatterns
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       [[@pats.map { |pat| [pat, tgt] }, []]]
     end
   end
-  
+
   class Wildcard < PatternElement
-    def initialize()
+    def initialize
       super()
     end
 
-    def match(tgt, bindings)
+    def match(_tgt, _bindings)
       [[[], []]]
     end
   end
@@ -262,7 +262,7 @@ module PatternMatch
       @name = name
     end
 
-    def match(tgt, bindings)
+    def match(tgt, _bindings)
       [[[], [[name, tgt]]]]
     end
   end
@@ -275,7 +275,7 @@ module PatternMatch
     end
 
     def match(tgt, bindings)
-      val = with_bindings(@ctx, bindings, {:expr => @expr}) { eval expr }
+      val = with_bindings(@ctx, bindings, expr: @expr) { eval expr }
       if val.__send__(:===, tgt)
         [[[], []]]
       else
@@ -310,7 +310,7 @@ module PatternMatch
     end
 
     def binding_module(obj)
-      m = obj.singleton_class.ancestors.find { |i| i.kind_of?(BindingModule) }
+      m = obj.singleton_class.ancestors.find { |i| i.is_a?(BindingModule) }
       unless m
         m = BindingModule.new
         obj.singleton_class.class_eval do
@@ -346,7 +346,7 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      mstack = MatchingStateStack.new(pat,tgt)
+      mstack = MatchingStateStack.new(pat, tgt)
       mstack.match
       mstack.results.map { |bindings|
         ret = with_bindings(ctx, bindings, &block)
@@ -368,7 +368,7 @@ module PatternMatch
     def _(*vals)
       case vals.length
       when 0
-        uscore = Wildcard.new()
+        uscore = Wildcard.new
         class << uscore
           def [](*args)
             Egison::List.call(*args)
@@ -383,7 +383,7 @@ module PatternMatch
     def __(*vals)
       case vals.length
       when 0
-        Wildcard.new()
+        Wildcard.new
       when 1
         ValuePattern.new(@ctx, vals[0])
       else
@@ -394,7 +394,7 @@ module PatternMatch
     def ___(*vals)
       case vals.length
       when 0
-        Wildcard.new()
+        Wildcard.new
       else
         undefined
       end
@@ -428,7 +428,7 @@ module PatternMatch
     end
 
     def binding_module(obj)
-      m = obj.singleton_class.ancestors.find { |i| i.kind_of?(BindingModule) }
+      m = obj.singleton_class.ancestors.find { |i| i.is_a?(BindingModule) }
       unless m
         m = BindingModule.new
         obj.singleton_class.class_eval do
@@ -447,8 +447,8 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      if pat.kind_of?(Pattern)
-        mstack = MatchingStateStack.new(pat,tgt)
+      if pat.is_a?(Pattern)
+        mstack = MatchingStateStack.new(pat, tgt)
         mstack.match
         if mstack.results.empty?
           nil
@@ -472,7 +472,7 @@ module PatternMatch
     def with(pat, &block)
       ctx = @ctx
       tgt = @tgt
-      mstack = MatchingStateStream.new(pat,tgt)
+      mstack = MatchingStateStream.new(pat, tgt)
       ::Egison::LazyArray.new(::Enumerator.new{|y|
         mstack.match do |bindings|
           y << with_bindings(ctx, bindings, &block)
@@ -491,7 +491,7 @@ module PatternMatch
   if respond_to?(:private_constant)
     constants.each do |c|
       klass = const_get(c)
-      next unless klass.kind_of?(Class)
+      next unless klass.is_a?(Class)
       if klass <= Pattern
         private_constant c
       end
@@ -509,7 +509,7 @@ module Egison
   end
 
   def match_stream(tgt, &block)
-    if !(tgt.kind_of?(Array) || tgt.kind_of?(Egison::LazyArray))
+    unless tgt.is_a?(Array) || tgt.is_a?(Egison::LazyArray)
       tgt = Egison::LazyArray.new(tgt)
     end
     env = PatternMatch.const_get(:EnvE).new(self, tgt)

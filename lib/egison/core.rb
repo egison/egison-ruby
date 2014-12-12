@@ -1,4 +1,3 @@
-require 'egison/version'
 require 'egison/lazyarray'
 
 module PatternMatch
@@ -17,8 +16,7 @@ module PatternMatch
   end
 
   class MatchingStateStack
-    attr_accessor :states
-    attr_accessor :results
+    attr_accessor :states, :results
 
     def initialize(pat, tgt)
       @states = [MatchingState.new(pat, tgt)]
@@ -26,9 +24,7 @@ module PatternMatch
     end
 
     def match
-      until @states.empty?
-        process
-      end
+      process until @states.empty?
       @results
     end
 
@@ -85,10 +81,10 @@ module PatternMatch
       atom = @atoms.shift
       rets = atom.first.match(atom.last, @bindings)
       rets.map do |new_atoms, new_bindings|
-        new_state = clone
-        new_state.atoms = new_atoms + new_state.atoms
-        new_state.bindings += new_bindings
-        new_state
+        clone.tap do |new_state|
+          new_state.atoms = new_atoms + new_state.atoms
+          new_state.bindings += new_bindings
+        end
       end
     end
 
@@ -138,65 +134,51 @@ module PatternMatch
       @subpatterns = subpatterns
     end
 
-    def match(tgt, _bindings)
+    def match(tgt, _)
       tgt = tgt.to_a
-      if subpatterns.empty?
-        unnileds = @matcher.unnil(tgt)
-        unnileds.map do
-          [[], []]
-        end
-      else
-        subpatterns = @subpatterns.clone
-        px = subpatterns.shift
-        if px.is_a?(Pattern)
-          if px.quantified
-            if subpatterns.empty?
-              [[[[px.pattern, tgt]], []]]
-            else
-              unjoineds = @matcher.unjoin(tgt)
-              unjoineds.map do |xs, ys|
-                [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []]
-              end
-            end
-          else
-            if tgt.empty?
-              []
-            else
-              unconseds = @matcher.uncons(tgt)
-              unconseds.map do |x, xs|
-                [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
-              end
-            end
+
+      return [[[], []]] * @matcher.unnil(tgt).count if subpatterns.empty?
+
+      subpatterns = @subpatterns.clone
+      px = subpatterns.shift
+      if px.is_a?(Pattern)
+        if px.quantified
+          return [[[[px.pattern, tgt]], []]] if subpatterns.empty?
+
+          unjoineds = @matcher.unjoin(tgt)
+          unjoineds.map do |xs, ys|
+            [[[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], []]
           end
         else
-          if tgt.empty?
-            []
-          else
-            unconseds = @matcher.uncons(tgt).select { |x, _xs| px == x }
-            unconseds.map do |_x, xs|
-              [[[PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
-            end
+          return [] if tgt.empty?
+
+          unconseds = @matcher.uncons(tgt)
+          unconseds.map do |x, xs|
+            [[[px, x], [PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
           end
+        end
+      else
+        return [] if tgt.empty?
+
+        unconseds = @matcher.uncons(tgt).select { |x, _xs| px == x }
+        unconseds.map do |_x, xs|
+          [[[PatternWithMatcher.new(@matcher, *subpatterns), xs]], []]
         end
       end
     end
 
     def match_stream(tgt, _bindings, &block)
       if subpatterns.empty?
-        if tgt.empty?
-          return block.([[], []])
-        end
+        return block.([[], []]) if tgt.empty?
       else
         subpatterns = @subpatterns.clone
         px = subpatterns.shift
         if px.is_a?(Pattern)
           if px.quantified
-            if subpatterns.empty?
-              block.([[[px.pattern, tgt]], []])
-            else
-              @matcher.unjoin_stream(tgt) do |xs, ys|
-                block.([[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], [])
-              end
+            return block.([[[px.pattern, tgt]], []]) if subpatterns.empty?
+
+            @matcher.unjoin_stream(tgt) do |xs, ys|
+              block.([[px.pattern, xs], [PatternWithMatcher.new(@matcher, *subpatterns), ys]], [])
             end
           else
             unless tgt.empty?
@@ -344,13 +326,9 @@ module PatternMatch
     private
 
     def with(pat, &block)
-      ctx = @ctx
-      tgt = @tgt
-      mstack = MatchingStateStack.new(pat, tgt)
+      mstack = MatchingStateStack.new(pat, @tgt)
       mstack.match
-      mstack.results.map { |bindings|
-        ret = with_bindings(ctx, bindings, &block)
-      }
+      mstack.results.map { |bindings| with_bindings(@ctx, bindings, &block) }
     rescue PatternNotMatch
     end
 
@@ -445,23 +423,17 @@ module PatternMatch
 
   class Env2 < Env
     def with(pat, &block)
-      ctx = @ctx
-      tgt = @tgt
       if pat.is_a?(Pattern)
-        mstack = MatchingStateStack.new(pat, tgt)
+        mstack = MatchingStateStack.new(pat, @tgt)
         mstack.match
-        if mstack.results.empty?
-          nil
-        else
-          ret = with_bindings(ctx, mstack.results.first, &block)
+        unless mstack.results.empty?
+          ret = with_bindings(@ctx, mstack.results.first, &block)
           ::Kernel.throw(:exit_match, ret)
         end
       else
-        if pat == tgt
-          ret = with_bindings(ctx, [], &block)
+        if pat == @tgt
+          ret = with_bindings(@ctx, [], &block)
           ::Kernel.throw(:exit_match, ret)
-        else
-          nil
         end
       end
     rescue PatternNotMatch
@@ -470,12 +442,10 @@ module PatternMatch
 
   class EnvE < Env
     def with(pat, &block)
-      ctx = @ctx
-      tgt = @tgt
-      mstack = MatchingStateStream.new(pat, tgt)
+      mstack = MatchingStateStream.new(pat, @tgt)
       ::Egison::LazyArray.new(::Enumerator.new{|y|
         mstack.match do |bindings|
-          y << with_bindings(ctx, bindings, &block)
+          y << with_bindings(@ctx, bindings, &block)
         end
       })
     rescue PatternNotMatch

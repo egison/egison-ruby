@@ -153,6 +153,10 @@ module Egison
       "\#<#{self.class.name}#{@terminated ? @cache.inspect : "[#{@cache.map(&:inspect).join(', ')}...]"}>"
     end
   end
+
+  module EgisonArray; end
+  LazyArray.send(:include, EgisonArray)
+  ::Array.send(:include, EgisonArray)
 end
 
 class ::Array

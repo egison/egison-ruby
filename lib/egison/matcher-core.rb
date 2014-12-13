@@ -35,7 +35,7 @@ module Egison
     def unnil(val)
       [[]]
     end
-    
+
     def uncons(val)
       val2 = val.clone
       x = val2.shift
@@ -68,7 +68,7 @@ module Egison
     end
 
     def uncons_stream(val, &block)
-      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
+      unless val.is_a?(EgisonArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone
@@ -91,7 +91,7 @@ module Egison
     end
 
     def unjoin_stream(val, &block)
-      unless val.is_a?(Array) || val.is_a?(Egison::LazyArray)
+      unless val.is_a?(EgisonArray)
         val = test_conv_lazy_array(val)
       end
       val2 = val.clone

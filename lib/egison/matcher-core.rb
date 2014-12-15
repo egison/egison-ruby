@@ -50,18 +50,11 @@ module Egison
     end
 
     def uncons(val)
-      [sep(val)]
+      List.uncons(val)
     end
 
     def unjoin(val)
-      val2, xs, ys = cln_emp_cln(val)
-      rets = [[xs, ys]]
-      until val2.empty?
-        x, ys = sep!(val2)
-        xs += [x]
-        rets += [[xs, ys]]
-      end
-      rets
+      List.unjoin(val)
     end
   end
 

@@ -33,14 +33,12 @@ module Egison
     def unjoin(val)
       val2, xs, ys = cln_emp_cln(val)
       rets = [[xs, ys]]
-      if val2.empty?
-        rets
-      else
+      unless val2.empty?
         x, ys = sep!(val2)
         rets2 = unjoin(ys)
         rets = (rets2.map { |xs2, ys2| [xs2, [x] + ys2] }) + (rets2.map { |xs2, ys2| [[x] + xs2, ys2] })
-        rets
       end
+      rets
     end
 
     def unjoin_stream(val, &block)
@@ -81,14 +79,13 @@ module Egison
     def unjoin(val)
       val2, xs, ys = cln_emp_cln(val)
       rets = [[xs, ys]]
-      if val2.empty?
-        rets
-      else
+      unless val2.empty?
         x, ys2 = sep!(val2)
         rets2 = unjoin(ys2)
         rets = (rets2.map { |xs2, _| [xs2, ys] }) + (rets2.map { |xs2, _ys2| [[x] + xs2, ys] })
         rets
       end
+      rets
     end
 
     def unjoin_stream(val, &block)

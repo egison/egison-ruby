@@ -1,59 +1,60 @@
 require 'egison/core'
 require 'egison/lazyarray'
-
-class Class
-  include PatternMatch::Matchable
-
-  def unnil(val)
-    if val.empty?
-      [[]]
-    else
-      []
-    end
-  end
-
-  def uncons(val)
-    fail NotImplementedError, "need to define `#{__method__}'"
-  end
-
-  def uncons_stream(val, &block)
-    fail NotImplementedError, "need to define `#{__method__}'"
-  end
-
-  private
-
-  def test_conv_lazy_array(val)
-    fail PatternMatch::PatternNotMatch unless val.respond_to?(:each)
-    Egison::LazyArray.new(val)
-  end
-end
-
 module Egison
   extend self
 
+  module PatternConstructorBase
+    include PatternMatch::Matchable
+
+    def sep(val)
+      val2 = val.clone
+      [val2.shift, val2]
+    end
+
+    def sep!(val)
+      [val.shift, val.clone]
+    end
+
+    def cln_emp_cln(val)
+      [val.clone, [], val.clone]
+    end
+
+    def unnil(val)
+      if val.empty?
+        [[]]
+      else
+        []
+      end
+    end
+
+    def uncons(val)
+      fail NotImplementedError, "need to define `#{__method__}'"
+    end
+
+    def uncons_stream(val, &block)
+      fail NotImplementedError, "need to define `#{__method__}'"
+    end
+
+    private
+      def test_conv_lazy_array!(val)
+        fail PatternMatch::PatternNotMatch unless val.respond_to?(:each)
+        val = Egison::LazyArray.new(val) unless val.is_a?(EgisonArray)
+      end
+  end
+
   class << Struct
+    include PatternConstructorBase
+
     def unnil(val)
       [[]]
     end
 
     def uncons(val)
-      val2 = val.clone
-      x = val2.shift
-      [[x, val2]]
+      List.uncons(val)
     end
 
     def unjoin(val)
-      val2 = val.clone
-      xs = []
-      ys = val2.clone
-      rets = [[xs, ys]]
-      until val2.empty?
-        x = val2.shift
-        ys = val2.clone
-        xs += [x]
-        rets += [[xs, ys]]
-      end
-      rets
+      List.unjoin(val)
     end
   end
 
@@ -61,29 +62,22 @@ module Egison
   end
 
   class << List
+    include PatternConstructorBase
+
     def uncons(val)
-      val2 = val.clone
-      x = val2.shift
-      [[x, val2]]
+      [sep(val)]
     end
 
     def uncons_stream(val, &block)
-      unless val.is_a?(EgisonArray)
-        val = test_conv_lazy_array(val)
-      end
-      val2 = val.clone
-      x = val2.shift
-      block.([x, val2])
+      test_conv_lazy_array!(val)
+      block.(sep(val))
     end
 
     def unjoin(val)
-      val2 = val.clone
-      xs = []
-      ys = val2.clone
+      val2, xs, ys = cln_emp_cln(val)
       rets = [[xs, ys]]
       until val2.empty?
-        x = val2.shift
-        ys = val2.clone
+        x, ys = sep!(val2)
         xs += [x]
         rets += [[xs, ys]]
       end
@@ -91,16 +85,11 @@ module Egison
     end
 
     def unjoin_stream(val, &block)
-      unless val.is_a?(EgisonArray)
-        val = test_conv_lazy_array(val)
-      end
-      val2 = val.clone
-      xs = []
-      ys = val2.clone
+      test_conv_lazy_array!(val)
+      val2, xs, ys = cln_emp_cln(val)
       block.([xs, ys])
       until val2.empty?
-        x = val2.shift
-        ys = val2.clone
+        x, ys = sep!(val2)
         xs += [x]
         block.([xs, ys])
       end

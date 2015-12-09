@@ -321,7 +321,7 @@ We will talk about this gem in <a target="_blank" href="http://rubykaigi.org/201
 ## LICENSE
 
 The license of this library code is BSD.
-I learned how to extend Ruby and how to write a gem from the code of  <a target="_blank" href="https://github.com/k-tsj/pattern-match">the pattern-match gem</a> by Kazuki Tsujimoto.
+I learned how to implement pattern-matching in Ruby and how to write a gem from the code of  <a target="_blank" href="https://github.com/k-tsj/pattern-match">the pattern-match gem</a> by Kazuki Tsujimoto.
 I designed syntax of pattern-matching to go with that gem.
 This library contains the copy from that gem.
 The full license text is [here](https://github.com/egisatoshi/egison-ruby/blob/master/LICENSE).
